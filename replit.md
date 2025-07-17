@@ -1,0 +1,108 @@
+# NovaFlow - Gantt Chart Generator
+
+## Overview
+
+NovaFlow is a modern web application for generating and managing Gantt charts. It allows users to create projects, define tasks with dates, and automatically generate Mermaid.js Gantt charts. The application features a clean, responsive interface with dark/light theme support and real-time chart editing capabilities.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Full-Stack TypeScript Application
+The application follows a monorepo structure with shared types and schemas between frontend and backend. It uses TypeScript throughout for type safety and better developer experience.
+
+### Frontend Architecture
+- **Framework**: React 18 with Vite for fast development and building
+- **UI Library**: Shadcn/ui components built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom design system and theme support
+- **State Management**: TanStack Query for server state management
+- **Routing**: Wouter for lightweight client-side routing
+- **Chart Rendering**: Mermaid.js for Gantt chart visualization
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js framework
+- **Language**: TypeScript with ES modules
+- **API Design**: RESTful API with JSON responses
+- **Development**: Hot reload with Vite middleware integration
+
+## Key Components
+
+### Data Layer
+- **ORM**: Drizzle ORM for type-safe database operations
+- **Database**: PostgreSQL with Neon serverless integration
+- **Schema**: Shared schema definitions between client and server
+- **Storage Interface**: Abstracted storage layer with in-memory fallback
+
+### UI Components
+- **Design System**: Custom theme with CSS variables for colors
+- **Component Library**: Comprehensive set of reusable UI components
+- **Layout**: Fixed header with sidebar navigation and main content area
+- **Forms**: React Hook Form with Zod validation
+- **Notifications**: Toast system for user feedback
+
+### Chart Generation
+- **Input Panel**: Task management interface with drag-and-drop ordering
+- **Chart Display**: Real-time Mermaid.js rendering with export capabilities
+- **Code Editor**: Modal for manual chart code editing
+- **Export Options**: PNG and SVG export functionality
+
+## Data Flow
+
+### Project Management Flow
+1. User creates/selects a project
+2. Tasks are added with titles, descriptions, and date ranges
+3. Tasks can be reordered and modified
+4. Chart generation triggers API call to backend
+5. Mermaid code is generated and displayed
+
+### Chart Generation Flow
+1. Frontend sends project and task data to `/api/generate-gantt` endpoint
+2. Backend processes the data and generates Mermaid.js code
+3. Generated code is returned and displayed in chart panel
+4. Users can manually edit the code or export the chart
+
+### Data Persistence
+- Projects, tasks, and charts are stored in PostgreSQL
+- Real-time updates use TanStack Query for optimistic updates
+- Session management handles user state
+
+## External Dependencies
+
+### Core Dependencies
+- **Database**: Neon PostgreSQL serverless database
+- **Authentication**: Session-based (connect-pg-simple)
+- **UI Components**: Radix UI primitives for accessibility
+- **Charts**: Mermaid.js for diagram generation
+- **Validation**: Zod for runtime type validation
+
+### Development Tools
+- **Build Tool**: Vite with React plugin
+- **Type Checking**: TypeScript compiler
+- **Database Migrations**: Drizzle Kit
+- **Replit Integration**: Custom plugins for development environment
+
+## Deployment Strategy
+
+### Build Process
+- Frontend builds to `dist/public` directory
+- Backend builds with esbuild for Node.js ES modules
+- Shared schemas compiled for both environments
+
+### Environment Configuration
+- Database URL required for PostgreSQL connection
+- Development mode includes Vite middleware for HMR
+- Production serves static files from Express
+
+### Development Workflow
+- `npm run dev` starts development server with hot reload
+- `npm run build` creates production-ready builds
+- `npm run db:push` applies database schema changes
+- TypeScript checking with `npm run check`
+
+### Hosting Considerations
+- Designed for Replit deployment with custom plugins
+- Supports both development and production environments
+- Database migrations handled through Drizzle Kit
+- Static asset serving through Express in production
