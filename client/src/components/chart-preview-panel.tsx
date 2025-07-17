@@ -42,8 +42,8 @@ export function ChartPreviewPanel({
         <div className="flex-shrink-0 mb-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold mb-2 header-title">Grafik Önizleme</h1>
-              <p className="text-base text-muted-foreground header-subtitle">Oluşturulan görselleştirmelerinizi görüntüleyin ve düzenleyin</p>
+              <h1 className="text-xl font-bold mb-1">{t('chart.preview')}</h1>
+              <p className="text-sm text-muted-foreground">View and export your generated visualizations</p>
             </div>
             <div className="flex items-center space-x-2">
               <Button

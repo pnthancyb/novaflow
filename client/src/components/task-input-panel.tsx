@@ -155,9 +155,9 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-shrink-0 p-6 border-b border-border bg-background">
-        <h1 className="text-2xl font-bold mb-2 header-title">AI Görevler</h1>
-        <p className="text-base text-muted-foreground header-subtitle">AI'nın görselleştirme oluşturması için görevler ve proje detayları ekleyin</p>
+      <div className="flex-shrink-0 p-4 border-b border-border bg-background">
+        <h1 className="text-xl font-bold mb-1">AI Tasks</h1>
+        <p className="text-sm text-muted-foreground">Add tasks and project details for AI to create visualizations</p>
       </div>
       
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
@@ -203,25 +203,25 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
 
             <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
               {tasks.map((task, index) => (
-                <div key={index} className="border border-border rounded-lg p-6 hover:shadow-md transition-shadow task-item">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3 flex-1">
-                      <GripVertical className="w-5 h-5 text-muted-foreground cursor-grab" />
+                <div key={index} className="border border-border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2 flex-1">
+                      <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
                       <Input
                         value={task.title}
                         onChange={(e) => updateTask(index, 'title', e.target.value)}
                         onBlur={() => saveTask(task)}
-                        className="font-semibold border-none bg-transparent p-0 h-auto text-lg"
-                        placeholder="Görev başlığı..."
+                        className="font-medium border-none bg-transparent p-0 h-auto text-base"
+                        placeholder="Task title..."
                       />
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => deleteTask(index)}
-                      className="h-10 w-10 p-0 text-muted-foreground hover:text-destructive"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                   <div className="grid grid-cols-2 gap-3 mb-3">
@@ -304,12 +304,12 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       <div className="flex-shrink-0 p-4 border-t border-border bg-background">
         <Button 
           onClick={handleGenerateChart}
-          className="w-full h-12 generate-button"
+          className="w-full h-12"
           disabled={generateMutation.isPending}
           size="lg"
         >
           <Sparkles className="w-5 h-5 mr-2" />
-          {generateMutation.isPending ? "AI oluşturuyor..." : "AI ile Grafik Oluştur"}
+          {generateMutation.isPending ? "AI is creating..." : "Generate Chart with AI"}
         </Button>
       </div>
     </div>
