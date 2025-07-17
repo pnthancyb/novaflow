@@ -7,10 +7,10 @@ import { ProjectsModal } from "@/components/projects-modal";
 
 interface HeaderProps {
   onSelectProject?: (project: any) => void;
-  onSelectTemplate?: (template: any) => void;
+  onApplyTemplate?: (template: any) => void;
 }
 
-export function Header({ onSelectProject, onSelectTemplate }: HeaderProps) {
+export function Header({ onSelectProject, onApplyTemplate }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 bg-background border-b border-border z-40">
       <div className="flex items-center justify-between px-6 py-3">
@@ -24,7 +24,7 @@ export function Header({ onSelectProject, onSelectTemplate }: HeaderProps) {
           
           <nav className="flex items-center space-x-1">
             <ProjectsModal onSelectProject={onSelectProject || (() => {})} />
-            <TemplatesModal onSelectTemplate={onSelectTemplate || (() => {})} />
+            <TemplatesModal onApplyTemplate={onApplyTemplate || (() => {})} />
             <PreferencesModal />
           </nav>
         </div>

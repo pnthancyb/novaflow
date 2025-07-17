@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,29 @@ export function PromptGenerator({ onGenerateChart }: PromptGeneratorProps) {
   const [prompt, setPrompt] = useState("");
   const [chartType, setChartType] = useState("Auto-select best type");
   const { toast } = useToast();
+
+  // Listen for template applications
+  useEffect(() => {
+    const handleTemplateApplied = (event: CustomEvent) => {
+      const template = event.detail;
+      if (template.prompt) {
+        setPrompt(template.prompt);
+      }
+    };
+
+    window.addEventListener('templateApplied', handleTemplateApplied as EventListener);
+    
+    // Check for stored template prompt
+    const storedPrompt = sessionStorage.getItem('templatePrompt');
+    if (storedPrompt) {
+      setPrompt(storedPrompt);
+      sessionStorage.removeItem('templatePrompt');
+    }
+
+    return () => {
+      window.removeEventListener('templateApplied', handleTemplateApplied as EventListener);
+    };
+  }, []);
 
   const generateFromPromptMutation = useMutation({
     mutationFn: async (data: { prompt: string; chartType: string }) => {

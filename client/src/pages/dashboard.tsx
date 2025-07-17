@@ -37,9 +37,17 @@ export default function Dashboard() {
     // Handle project selection
   };
 
-  const handleSelectTemplate = (template: any) => {
+  const handleApplyTemplate = (template: any) => {
+    // Auto-populate both the schema and the prompt
     setMermaidCode(template.schema);
     setShowChart(true);
+    // Also pass the prompt to the prompt generator component
+    if (template.prompt) {
+      // Store template prompt for the prompt generator
+      sessionStorage.setItem('templatePrompt', template.prompt);
+      // Trigger a custom event to update the prompt generator
+      window.dispatchEvent(new CustomEvent('templateApplied', { detail: template }));
+    }
   };
 
   const exportToPNG = () => {
@@ -58,7 +66,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <Header 
         onSelectProject={handleSelectProject}
-        onSelectTemplate={handleSelectTemplate}
+        onApplyTemplate={handleApplyTemplate}
       />
       
       <div className="flex h-screen pt-16">

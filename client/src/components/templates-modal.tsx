@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, BarChart3, GitBranch, Brain, Clock, Users, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface Template {
   id: string;
@@ -14,7 +15,12 @@ interface Template {
   category: string;
   icon: React.ComponentType<any>;
   schema: string;
+  prompt: string;
   tags: string[];
+}
+
+interface TemplatesModalProps {
+  onApplyTemplate: (template: Template) => void;
 }
 
 const templates: Template[] = [
@@ -25,6 +31,7 @@ const templates: Template[] = [
     category: "Development",
     icon: GitBranch,
     tags: ["Development", "Workflow", "Agile"],
+    prompt: "Create a comprehensive software development workflow showing all stages from requirements gathering to deployment and maintenance, including testing loops and feedback cycles",
     schema: `flowchart TD
     A[Requirements Gathering] --> B[Design & Architecture]
     B --> C[Development]
@@ -52,6 +59,7 @@ const templates: Template[] = [
     category: "Project Management",
     icon: BarChart3,
     tags: ["Gantt", "Timeline", "Project"],
+    prompt: "Generate a detailed project management Gantt chart showing planning, development, testing, and deployment phases with realistic timelines and dependencies",
     schema: `gantt
     title Project Timeline
     dateFormat  YYYY-MM-DD
@@ -77,6 +85,7 @@ const templates: Template[] = [
     category: "Planning",
     icon: Brain,
     tags: ["Mind Map", "Brainstorming", "Ideas"],
+    prompt: "Create a comprehensive mind map for brainstorming project ideas, showing features, technology stack, and timeline considerations",
     schema: `mindmap
   root((Project Ideas))
     Features
@@ -123,6 +132,7 @@ const templates: Template[] = [
     category: "UX/UI",
     icon: Users,
     tags: ["UX", "Journey", "Customer"],
+    prompt: "Generate a detailed user journey map showing the complete customer experience from awareness to advocacy with touchpoints and emotions",
     schema: `journey
     title User Journey
     section Discovery
@@ -153,6 +163,7 @@ const templates: Template[] = [
     category: "Development",
     icon: GitBranch,
     tags: ["State", "Logic", "System"],
+    prompt: "Create a system state diagram showing different states and transitions for application logic with error handling and retry mechanisms",
     schema: `stateDiagram-v2
     [*] --> Idle
     Idle --> Loading : Start Process
@@ -187,6 +198,7 @@ const templates: Template[] = [
     category: "Product",
     icon: Clock,
     tags: ["Timeline", "Product", "Launch"],
+    prompt: "Create a product roadmap timeline showing quarterly releases, feature development, and key milestones over a 12-month period",
     schema: `timeline
     title Product Development Timeline
     
@@ -214,25 +226,26 @@ const templates: Template[] = [
 ];
 
 interface TemplatesModalProps {
-  onSelectTemplate: (template: Template) => void;
+  onApplyTemplate: (template: Template) => void;
 }
 
-export function TemplatesModal({ onSelectTemplate }: TemplatesModalProps) {
+export function TemplatesModal({ onApplyTemplate }: TemplatesModalProps) {
   const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const categories = ["all", ...Array.from(new Set(templates.map(t => t.category)))];
   const filteredTemplates = selectedCategory === "all" 
     ? templates 
     : templates.filter(t => t.category === selectedCategory);
 
-  const handleSelectTemplate = (template: Template) => {
-    onSelectTemplate(template);
+  const handleUseTemplate = (template: Template) => {
+    onApplyTemplate(template);
     setOpen(false);
     toast({
-      title: "Template Applied",
-      description: `${template.name} template has been applied to your project.`,
+      title: t('templates.applied'),
+      description: `${template.name} ${t('templates.appliedSuccess')}`,
     });
   };
 
@@ -294,10 +307,10 @@ export function TemplatesModal({ onSelectTemplate }: TemplatesModalProps) {
                       <div className="flex space-x-2">
                         <Button 
                           size="sm" 
-                          onClick={() => handleSelectTemplate(template)}
+                          onClick={() => handleUseTemplate(template)}
                           className="flex-1"
                         >
-                          Use Template
+                          {t('templates.useTemplate')}
                         </Button>
                         <Button 
                           size="sm" 

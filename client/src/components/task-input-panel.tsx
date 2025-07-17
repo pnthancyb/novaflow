@@ -200,11 +200,13 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
   };
 
   return (
-    <div className="p-6 overflow-y-auto custom-scrollbar">
-      <div className="mb-6">
+    <div className="p-6 h-full flex flex-col">
+      <div className="flex-shrink-0 mb-6">
         <h1 className="text-2xl font-bold mb-2">AI Visualization Builder</h1>
         <p className="text-muted-foreground">Add your project data and let AI create the perfect visualization</p>
       </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6">
 
       {/* Project Settings */}
       <Card className="mb-6">
@@ -340,15 +342,19 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
         </CardContent>
       </Card>
 
-      {/* Generate Button */}
-      <Button 
-        onClick={generateGanttChart}
-        className="w-full"
-        disabled={generateGanttMutation.isPending}
-      >
-        <Sparkles className="w-4 h-4 mr-2" />
-        {generateGanttMutation.isPending ? "AI is creating..." : "Generate Visualization with AI"}
-      </Button>
+      </div>
+
+      {/* Generate Button - Fixed at bottom */}
+      <div className="flex-shrink-0 pt-4 border-t bg-background">
+        <Button 
+          onClick={generateGanttChart}
+          className="w-full"
+          disabled={generateGanttMutation.isPending}
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          {generateGanttMutation.isPending ? "AI is creating..." : "Generate Visualization with AI"}
+        </Button>
+      </div>
     </div>
   );
 }

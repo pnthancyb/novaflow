@@ -23,6 +23,7 @@ export function MermaidChart({
   const elementRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [chartElement, setChartElement] = useState<HTMLElement | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -98,10 +99,10 @@ export function MermaidChart({
         const chartId = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
         // Render the chart
-        const { svg } = await mermaid.render(chartId, chart);
+        const result = await mermaid.render(chartId, chart);
         
         if (elementRef.current) {
-          elementRef.current.innerHTML = svg;
+          elementRef.current.innerHTML = result.svg;
           
           // Apply additional styling for better quality
           const svgElement = elementRef.current.querySelector('svg');
@@ -115,6 +116,7 @@ export function MermaidChart({
             
             // Add class for PNG export targeting
             svgElement.classList.add('mermaid-chart-svg');
+            setChartElement(svgElement);
           }
         }
 
