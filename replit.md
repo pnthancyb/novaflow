@@ -1,8 +1,8 @@
-# NovaFlow - Gantt Chart Generator
+# NovaFlow - AI-Powered Visualization Generator
 
 ## Overview
 
-NovaFlow is a modern web application for generating and managing Gantt charts. It allows users to create projects, define tasks with dates, and automatically generate Mermaid.js Gantt charts. The application features a clean, responsive interface with dark/light theme support and real-time chart editing capabilities.
+NovaFlow is an open-source, Notion-style web application that uses AI to generate interactive Mermaid.js visualizations. Users input project data and AI intelligently chooses the best visualization type - whether it's a Gantt chart, flowchart, mind map, timeline, or any other Mermaid diagram. The application features a minimalist black-and-white design with dark/light theme support and real-time chart editing capabilities.
 
 ## User Preferences
 
@@ -42,11 +42,13 @@ The application follows a monorepo structure with shared types and schemas betwe
 - **Forms**: React Hook Form with Zod validation
 - **Notifications**: Toast system for user feedback
 
-### Chart Generation
+### AI-Powered Chart Generation
 - **Input Panel**: Task management interface with drag-and-drop ordering
+- **AI Selection**: Intelligent chart type selection based on data and user instructions
 - **Chart Display**: Real-time Mermaid.js rendering with export capabilities
 - **Code Editor**: Modal for manual chart code editing
-- **Export Options**: PNG and SVG export functionality
+- **Export Options**: PNG, SVG, and PDF export functionality
+- **Multiple Chart Types**: Support for Gantt charts, flowcharts, mind maps, timelines, state diagrams, and more
 
 ## Data Flow
 
@@ -57,11 +59,13 @@ The application follows a monorepo structure with shared types and schemas betwe
 4. Chart generation triggers API call to backend
 5. Mermaid code is generated and displayed
 
-### Chart Generation Flow
-1. Frontend sends project and task data to `/api/generate-gantt` endpoint
-2. Backend processes the data and generates Mermaid.js code
-3. Generated code is returned and displayed in chart panel
-4. Users can manually edit the code or export the chart
+### AI-Driven Chart Generation Flow
+1. Frontend sends project data, tasks, and user instructions to `/api/generate-gantt` endpoint
+2. Backend analyzes the data and user requirements using Groq AI
+3. AI selects the optimal visualization type (Gantt, flowchart, mind map, etc.)
+4. AI generates appropriate Mermaid.js code for the selected chart type
+5. Generated code is returned and displayed in chart panel
+6. Users can manually edit the code or export the chart
 
 ### Data Persistence
 - Projects, tasks, and charts are stored in PostgreSQL
@@ -71,7 +75,8 @@ The application follows a monorepo structure with shared types and schemas betwe
 ## External Dependencies
 
 ### Core Dependencies
-- **Database**: Neon PostgreSQL serverless database
+- **Database**: PostgreSQL for data persistence
+- **AI Service**: Groq API for intelligent chart generation
 - **Authentication**: Session-based (connect-pg-simple)
 - **UI Components**: Radix UI primitives for accessibility
 - **Charts**: Mermaid.js for diagram generation

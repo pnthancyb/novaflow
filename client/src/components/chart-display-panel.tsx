@@ -65,7 +65,7 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
         {/* Chart Controls */}
         <div className="p-4 border-b border-border bg-muted">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold">Generated Gantt Chart</h3>
+            <h3 className="font-semibold">AI-Generated Visualization</h3>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" onClick={exportToPNG} disabled={!mermaidCode}>
                 <FileImage className="w-4 h-4 mr-1" />
@@ -94,8 +94,8 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
               mermaidCode ? 'bg-green-500' : 'bg-gray-400'
             }`} />
             <span>
-              {isGenerating ? 'Generating chart...' : 
-               mermaidCode ? 'Chart generated successfully' : 'Ready to generate chart'}
+              {isGenerating ? 'AI is creating visualization...' : 
+               mermaidCode ? 'Visualization generated successfully' : 'Ready to generate visualization'}
             </span>
           </div>
         </div>
@@ -108,8 +108,8 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
                 <div className="w-full h-96 flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-12 h-12 border-4 border-muted border-t-primary rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-muted-foreground font-medium">Generating Gantt chart with AI...</p>
-                    <p className="text-sm text-muted-foreground mt-1">This may take a few moments</p>
+                    <p className="text-muted-foreground font-medium">AI is creating your visualization...</p>
+                    <p className="text-sm text-muted-foreground mt-1">Analyzing data and selecting optimal chart type</p>
                   </div>
                 </div>
               ) : mermaidCode ? (
@@ -120,8 +120,8 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
                 <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-border rounded-lg">
                   <div className="text-center">
                     <BarChart3 className="w-16 h-16 text-muted-foreground mb-4 mx-auto" />
-                    <p className="text-muted-foreground mb-2">AI-Generated Gantt Chart</p>
-                    <p className="text-sm text-muted-foreground">Chart will appear here after generation</p>
+                    <p className="text-muted-foreground mb-2">AI-Generated Visualization</p>
+                    <p className="text-sm text-muted-foreground">AI will create the perfect chart for your data</p>
                   </div>
                 </div>
               )}

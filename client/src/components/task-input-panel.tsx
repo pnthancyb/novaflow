@@ -29,7 +29,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
   const [projectName, setProjectName] = useState("");
   const [projectStartDate, setProjectStartDate] = useState("");
   const [tasks, setTasks] = useState<TaskData[]>([]);
-  const [chartStyle, setChartStyle] = useState("Standard Gantt");
+  const [chartStyle, setChartStyle] = useState("Auto-select best type");
   const [additionalInstructions, setAdditionalInstructions] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -115,14 +115,14 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
     onSuccess: (data) => {
       onGenerateChart(data.mermaidCode);
       toast({
-        title: "Chart Generated",
-        description: "Your Gantt chart has been generated successfully!",
+        title: "Visualization Generated",
+        description: "AI has created your visualization successfully!",
       });
     },
     onError: (error) => {
       toast({
         title: "Generation Failed",
-        description: error.message || "Failed to generate Gantt chart",
+        description: error.message || "Failed to generate visualization",
         variant: "destructive",
       });
     },
@@ -171,7 +171,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
     if (!projectName.trim()) {
       toast({
         title: "Project Name Required",
-        description: "Please enter a project name before generating the chart.",
+        description: "Please enter a project name before generating the visualization.",
         variant: "destructive",
       });
       return;
@@ -180,7 +180,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
     if (tasks.length === 0) {
       toast({
         title: "No Tasks",
-        description: "Please add at least one task before generating the chart.",
+        description: "Please add at least one task before generating the visualization.",
         variant: "destructive",
       });
       return;
@@ -202,8 +202,8 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
   return (
     <div className="w-1/2 p-6 overflow-y-auto custom-scrollbar">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">Project Timeline Builder</h1>
-        <p className="text-muted-foreground">Add tasks and dates to generate an AI-powered Gantt chart</p>
+        <h1 className="text-2xl font-bold mb-2">AI Visualization Builder</h1>
+        <p className="text-muted-foreground">Add your project data and let AI create the perfect visualization</p>
       </div>
 
       {/* Project Settings */}
@@ -308,27 +308,31 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       {/* AI Generation Settings */}
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <h3 className="font-semibold mb-3">AI Generation Settings</h3>
+          <h3 className="font-semibold mb-3">AI Visualization Settings</h3>
           <div className="space-y-3">
             <div>
-              <Label>Chart Style</Label>
+              <Label>Visualization Type</Label>
               <Select value={chartStyle} onValueChange={setChartStyle}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Standard Gantt">Standard Gantt</SelectItem>
-                  <SelectItem value="Milestone View">Milestone View</SelectItem>
-                  <SelectItem value="Resource Allocation">Resource Allocation</SelectItem>
+                  <SelectItem value="Auto-select best type">Auto-select best type</SelectItem>
+                  <SelectItem value="Gantt Chart">Gantt Chart</SelectItem>
+                  <SelectItem value="Flowchart">Flowchart</SelectItem>
+                  <SelectItem value="Mind Map">Mind Map</SelectItem>
+                  <SelectItem value="Timeline">Timeline</SelectItem>
+                  <SelectItem value="State Diagram">State Diagram</SelectItem>
+                  <SelectItem value="Graph">Graph</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Additional Instructions</Label>
+              <Label>Instructions for AI</Label>
               <Textarea
                 value={additionalInstructions}
                 onChange={(e) => setAdditionalInstructions(e.target.value)}
-                placeholder="Optional: Add specific requirements for the Gantt chart generation..."
+                placeholder="Tell AI how to visualize your data: 'Show as a process flow', 'Create a mind map', 'Focus on dependencies', etc."
                 rows={3}
               />
             </div>
@@ -343,7 +347,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
         disabled={generateGanttMutation.isPending}
       >
         <Sparkles className="w-4 h-4 mr-2" />
-        {generateGanttMutation.isPending ? "Generating..." : "Generate Gantt Chart with AI"}
+        {generateGanttMutation.isPending ? "AI is creating..." : "Generate Visualization with AI"}
       </Button>
     </div>
   );

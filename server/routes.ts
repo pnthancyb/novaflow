@@ -135,14 +135,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
       }
 
-      // Prepare the prompt for Groq
-      const prompt = `Generate a Mermaid.js Gantt chart for the following project:
+      // Prepare the prompt for Groq - let AI decide the best visualization type
+      const prompt = `Create a Mermaid.js visualization for the following project data:
 
 Project Name: ${validatedData.projectName}
-Chart Style: ${validatedData.chartStyle || 'Standard Gantt'}
-Additional Instructions: ${validatedData.instructions || 'None'}
+Visualization Style: ${validatedData.chartStyle || 'Auto-select best type'}
+User Instructions: ${validatedData.instructions || 'Create the most appropriate visualization for this data'}
 
-Tasks:
+Project Data:
 ${validatedData.tasks.map((task, index) => 
   `${index + 1}. ${task.title}
      Start Date: ${task.startDate}
@@ -150,13 +150,16 @@ ${validatedData.tasks.map((task, index) =>
      Description: ${task.description || 'N/A'}`
 ).join('\n\n')}
 
-Please generate a complete Mermaid.js Gantt chart code that includes:
-1. A proper title
-2. Date format specification
-3. All tasks with proper date ranges
-4. Clean syntax
+Based on this data and user instructions, select the most appropriate Mermaid.js diagram type:
+- If time-based project management: use gantt chart
+- If process flow or workflow: use flowchart
+- If hierarchical concepts: use mind map
+- If showing relationships: use graph
+- If showing states/transitions: use state diagram
+- If user specified a particular type: use that type
+- Any other Mermaid diagram type that fits the data
 
-Return only the Mermaid.js code without any explanations or markdown formatting.`;
+Generate clean, well-structured Mermaid.js code that best represents this information.`;
 
       // Call Groq API
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -166,11 +169,11 @@ Return only the Mermaid.js code without any explanations or markdown formatting.
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'mixtral-8x7b-32768',
+          model: 'llama-3.3-70b-versatile',
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in project management and Mermaid.js. Generate clean, well-structured Gantt charts using proper Mermaid syntax. Return only the Mermaid code without any explanations or markdown formatting.'
+              content: 'You are an expert in data visualization and Mermaid.js. Based on the user\'s request, choose the most appropriate visualization type and generate clean, well-structured Mermaid.js code. You can create: gantt charts, flowcharts, mind maps, timelines, gitgraph, state diagrams, or any other Mermaid diagram type that best represents the data. Return only the Mermaid code without any explanations or markdown formatting.'
             },
             {
               role: 'user',
