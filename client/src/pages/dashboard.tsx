@@ -8,8 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, Code, Download, FileText } from "lucide-react";
+import { ExportModal } from "@/components/export-modal";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [currentProjectId] = useState(1); // Mock project ID for demo
   const [mermaidCode, setMermaidCode] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -40,48 +43,15 @@ export default function Dashboard() {
   };
 
   const exportToPNG = () => {
-    // Get the SVG element from the rendered chart
-    const svgElement = document.querySelector('.mermaid-chart svg') as SVGElement;
-    if (!svgElement) return;
-
-    // Create a high-quality canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Get SVG dimensions
-    const svgRect = svgElement.getBoundingClientRect();
-    const scale = 2; // Higher resolution for better quality
-    
-    canvas.width = svgRect.width * scale;
-    canvas.height = svgRect.height * scale;
-    
-    // Scale the context for high DPI
-    ctx.scale(scale, scale);
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const data = new XMLSerializer().serializeToString(svgElement);
-    const svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-
-    const img = new Image();
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, svgRect.width, svgRect.height);
-      
-      // Download the canvas as PNG with high quality
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const link = document.createElement('a');
-          link.download = 'novaflow-chart.png';
-          link.href = URL.createObjectURL(blob);
-          link.click();
-        }
-      }, 'image/png', 1.0);
-      
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+    // Trigger export from the MermaidChart component
+    const chartComponent = document.querySelector('.mermaid-chart-svg') as SVGElement;
+    if (chartComponent) {
+      // The MermaidChart component handles the export internally
+      const exportButton = document.querySelector('[data-export-png]') as HTMLButtonElement;
+      if (exportButton) {
+        exportButton.click();
+      }
+    }
   };
 
   return (
@@ -128,8 +98,8 @@ export default function Dashboard() {
                   mermaidCode ? 'bg-green-500' : 'bg-gray-400'
                 }`} />
                 <span className="text-sm">
-                  {isGenerating ? 'AI is creating visualization...' : 
-                   mermaidCode ? 'Visualization ready' : 'No visualization generated'}
+                  {isGenerating ? t('dashboard.generating') : 
+                   mermaidCode ? t('dashboard.ready') : t('dashboard.noVisualization')}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
@@ -140,17 +110,12 @@ export default function Dashboard() {
                   disabled={!mermaidCode}
                 >
                   <Eye className="w-4 h-4 mr-2" />
-                  Preview
+                  {t('chart.preview')}
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={exportToPNG}
-                  disabled={!mermaidCode}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export PNG
-                </Button>
+                <ExportModal 
+                  mermaidCode={mermaidCode}
+                  onExport={(format, quality) => console.log('Exported:', format, quality)}
+                />
               </div>
             </div>
           </div>

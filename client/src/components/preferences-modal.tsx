@@ -6,11 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Palette, Zap, FileText, Download } from "lucide-react";
+import { Settings, Palette, Zap, FileText, Download, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/use-translation";
 
 export function PreferencesModal() {
   const [open, setOpen] = useState(false);
+  const { t, language, setLanguage } = useTranslation();
   const [preferences, setPreferences] = useState({
     defaultChartType: "Auto-select best type",
     theme: "system",
@@ -61,7 +63,7 @@ export function PreferencesModal() {
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Preferences</DialogTitle>
+          <DialogTitle>{t('preferences.title')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6">
@@ -75,7 +77,7 @@ export function PreferencesModal() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Default Chart Type</Label>
+                <Label>{t('preferences.defaultChartType')}</Label>
                 <Select 
                   value={preferences.defaultChartType} 
                   onValueChange={(value) => setPreferences({...preferences, defaultChartType: value})}
@@ -84,13 +86,13 @@ export function PreferencesModal() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Auto-select best type">Auto-select best type</SelectItem>
-                    <SelectItem value="Gantt Chart">Gantt Chart</SelectItem>
-                    <SelectItem value="Flowchart">Flowchart</SelectItem>
-                    <SelectItem value="Mind Map">Mind Map</SelectItem>
-                    <SelectItem value="Timeline">Timeline</SelectItem>
-                    <SelectItem value="State Diagram">State Diagram</SelectItem>
-                    <SelectItem value="Graph">Graph</SelectItem>
+                    <SelectItem value="Auto-select best type">{t('preferences.autoSelect')}</SelectItem>
+                    <SelectItem value="Gantt Chart">{t('preferences.ganttChart')}</SelectItem>
+                    <SelectItem value="Flowchart">{t('preferences.flowchart')}</SelectItem>
+                    <SelectItem value="Mind Map">{t('preferences.mindMap')}</SelectItem>
+                    <SelectItem value="Timeline">{t('preferences.timeline')}</SelectItem>
+                    <SelectItem value="State Diagram">{t('preferences.stateDiagram')}</SelectItem>
+                    <SelectItem value="Graph">{t('preferences.graph')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -198,17 +200,45 @@ export function PreferencesModal() {
             </CardContent>
           </Card>
 
+          {/* Language Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center text-lg">
+                <Globe className="w-5 h-5 mr-2" />
+                {t('preferences.language')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t('preferences.language')}</Label>
+                <Select 
+                  value={language} 
+                  onValueChange={(value) => setLanguage(value as "en" | "tr" | "es")}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">{t('preferences.english')}</SelectItem>
+                    <SelectItem value="tr">{t('preferences.turkish')}</SelectItem>
+                    <SelectItem value="es">{t('preferences.spanish')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Export Settings */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center text-lg">
                 <Download className="w-5 h-5 mr-2" />
-                Export
+                {t('preferences.export')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Default Export Format</Label>
+                <Label>{t('preferences.defaultExportFormat')}</Label>
                 <Select 
                   value={preferences.exportFormat} 
                   onValueChange={(value) => setPreferences({...preferences, exportFormat: value})}
