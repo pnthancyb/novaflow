@@ -184,7 +184,7 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Important syntax rules: 1) Never put "title" statements inside graph declarations 2) Use proper node syntax like A[Label] or A-->B 3) Ensure all syntax follows Mermaid.js specifications exactly. Choose the best diagram type (gantt, flowchart, mindmap, timeline, state, graph, etc.) based on the data.'
+              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Critical syntax rules: 1) Node IDs must be alphanumeric (A, B, node1, step2) 2) Node labels go in brackets: A[Start Process] 3) Connections use arrows: A --> B 4) Never put spaces in node IDs 5) Example: A[Planning] --> B[Requirements Gathering] --> C[Development] 6) Never use "title" inside graph declarations. Generate syntactically perfect Mermaid code only.'
             },
             {
               role: 'user',
@@ -290,7 +290,7 @@ Return only the Mermaid code without explanations.`;
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Important syntax rules: 1) Never put "title" statements inside graph declarations 2) Use proper node syntax like A[Label] or A-->B 3) Ensure all syntax follows Mermaid.js specifications exactly. Choose the best diagram type based on the user request.'
+              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Critical syntax rules: 1) Node IDs must be alphanumeric (A, B, node1, step2) 2) Node labels go in brackets: A[Start Process] 3) Connections use arrows: A --> B 4) Never put spaces in node IDs 5) Example: A[Planning] --> B[Requirements Gathering] --> C[Development] 6) Never use "title" inside graph declarations. Generate syntactically perfect Mermaid code only.'
             },
             {
               role: 'user',

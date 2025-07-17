@@ -92,6 +92,16 @@ export function MermaidChart({
           .replace(/^(graph\s+\w+)\s*\n\s*title\s+.*$/gm, '$1')
           // Remove standalone title lines that appear after graph declaration
           .replace(/\n\s*title\s+.*$/gm, '')
+          // Fix node definitions with spaces and special characters
+          .replace(/(\w+)\s*-->\s*([^[\n]+)\[([^\]]+)\]/g, (match, from, nodeText, label) => {
+            // Create proper node ID and connection
+            const nodeId = nodeText.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+            return `${from} --> ${nodeId}[${label}]`;
+          })
+          // Fix standalone node definitions that might have issues
+          .replace(/([A-Za-z0-9_]+)\s*\[\s*([^\]]+)\s*\]/g, '$1[$2]')
+          // Fix arrow connections with proper spacing
+          .replace(/\s*-->\s*/g, ' --> ')
           // Clean up multiple newlines
           .replace(/\n\s*\n\s*\n/g, '\n\n')
           .trim();
