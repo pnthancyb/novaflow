@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import mermaid from "mermaid";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Code, Maximize2, RefreshCw } from "lucide-react";
+import { Download, Code, Maximize2, RefreshCw, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MermaidChartProps {
@@ -23,88 +23,54 @@ export function MermaidChart({
   const elementRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [chartElement, setChartElement] = useState<HTMLElement | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!chart) {
-      setIsLoading(false);
-      return;
-    }
+    let isMounted = true;
 
     const renderChart = async () => {
-      if (!elementRef.current) return;
+      if (!chart || !elementRef.current || !isMounted) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         setIsLoading(true);
         setError(null);
 
-        // Configure mermaid with high-quality settings
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: document.documentElement.classList.contains('dark') ? 'dark' : 'base',
-          themeVariables: {
-            primaryColor: '#3b82f6',
-            primaryTextColor: '#1f2937',
-            primaryBorderColor: '#e5e7eb',
-            lineColor: '#6b7280',
-            tertiaryColor: '#f9fafb',
-            background: '#ffffff',
-            secondaryColor: '#f3f4f6',
-            tertiaryTextColor: '#374151',
-            tertiaryBorderColor: '#d1d5db',
-            quaternaryColor: '#e5e7eb',
-            fontFamily: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif',
-            fontSize: '14px'
-          },
-          flowchart: {
-            htmlLabels: true,
-            curve: 'basis',
-            padding: 20,
-            nodeSpacing: 50,
-            rankSpacing: 50,
-            diagramPadding: 20,
-            useMaxWidth: true
-          },
-          gantt: {
-            leftPadding: 75,
-            gridLineStartPadding: 35,
-            fontSize: 12,
-            sectionFontSize: 14,
-            fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-            useMaxWidth: true
-          },
-          mindmap: {
-            padding: 20,
-            maxNodeSizeX: 200,
-            maxNodeSizeY: 100,
-            useMaxWidth: true
-          },
-          timeline: {
-            padding: 20,
-            useMaxWidth: true
-          },
-          journey: {
-            diagramMarginX: 50,
-            diagramMarginY: 10,
-            leftMargin: 150,
-            useMaxWidth: true
-          }
-        });
-
-        // Clear previous content
+        // Clear previous content immediately
         elementRef.current.innerHTML = '';
 
-        // Generate unique ID for the chart
-        const chartId = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+        // Initialize mermaid with simplified configuration
+        await mermaid.initialize({
+          startOnLoad: false,
+          theme: 'base',
+          securityLevel: 'loose',
+          flowchart: { useMaxWidth: true },
+          gantt: { useMaxWidth: true },
+          mindmap: { useMaxWidth: true },
+          timeline: { useMaxWidth: true }
+        });
 
-        // Render the chart
-        const result = await mermaid.render(chartId, chart);
-        
-        if (elementRef.current) {
+        // Add a small delay to ensure DOM is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        if (!isMounted || !elementRef.current) return;
+
+        // Generate unique ID for the chart
+        const chartId = `chart-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+
+        try {
+          // Render the chart with error handling
+          const result = await mermaid.render(chartId, chart);
+          
+          if (!isMounted || !elementRef.current) return;
+
+          // Insert the SVG
           elementRef.current.innerHTML = result.svg;
           
-          // Apply additional styling for better quality
+          // Apply styling
           const svgElement = elementRef.current.querySelector('svg');
           if (svgElement) {
             svgElement.setAttribute('width', '100%');
@@ -112,23 +78,39 @@ export function MermaidChart({
             svgElement.style.maxWidth = '100%';
             svgElement.style.height = 'auto';
             svgElement.style.display = 'block';
-            svgElement.style.margin = '0 auto';
-            
-            // Add class for PNG export targeting
             svgElement.classList.add('mermaid-chart-svg');
           }
+
+          setIsLoading(false);
+          setRetryCount(0);
+        } catch (renderError) {
+          console.error('Mermaid render error:', renderError);
+          throw renderError;
         }
 
-        setIsLoading(false);
       } catch (err) {
-        console.error('Mermaid rendering error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to render chart');
-        setIsLoading(false);
+        console.error('Chart rendering failed:', err);
+        if (isMounted) {
+          setError(err instanceof Error ? err.message : 'Failed to render chart');
+          setIsLoading(false);
+        }
       }
     };
 
-    renderChart();
-  }, [chart]);
+    // Add small delay before rendering
+    const timer = setTimeout(() => {
+      renderChart();
+    }, 50);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [chart, retryCount]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   const handleExportPNG = async () => {
     const svgElement = elementRef.current?.querySelector('svg') as SVGElement;
