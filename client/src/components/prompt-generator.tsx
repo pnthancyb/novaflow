@@ -87,78 +87,82 @@ export function PromptGenerator({ onGenerateChart }: PromptGeneratorProps) {
   ];
 
   return (
-    <div className="p-6 overflow-y-auto custom-scrollbar">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">AI Prompt Generator</h1>
-        <p className="text-muted-foreground">
-          Describe what you want to visualize and let AI create the perfect chart
-        </p>
+    <div className="h-full flex flex-col">
+      <div className="flex-shrink-0 p-4 border-b border-border bg-background">
+        <h1 className="text-xl font-bold mb-1">AI Prompt Generator</h1>
+        <p className="text-sm text-muted-foreground">Describe what you want to visualize and let AI create the perfect chart</p>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="prompt">What do you want to visualize?</Label>
+                <Textarea
+                  id="prompt"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Describe your visualization: 'Create a project timeline for building a mobile app' or 'Show the customer support process as a flowchart'"
+                  rows={4}
+                  className="mt-2"
+                />
+              </div>
+
+              <div>
+                <Label>Preferred Chart Type</Label>
+                <Select value={chartType} onValueChange={setChartType}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Auto-select best type">Auto-select best type</SelectItem>
+                    <SelectItem value="Gantt Chart">Gantt Chart</SelectItem>
+                    <SelectItem value="Flowchart">Flowchart</SelectItem>
+                    <SelectItem value="Mind Map">Mind Map</SelectItem>
+                    <SelectItem value="Timeline">Timeline</SelectItem>
+                    <SelectItem value="State Diagram">State Diagram</SelectItem>
+                    <SelectItem value="Graph">Graph</SelectItem>
+                    <SelectItem value="Sequence Diagram">Sequence Diagram</SelectItem>
+                    <SelectItem value="User Journey">User Journey</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="font-semibold mb-3">Example Prompts</h3>
+            <div className="space-y-2">
+              {examplePrompts.map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => setPrompt(example)}
+                  className="w-full text-left p-3 rounded-lg border border-border hover:bg-muted transition-colors text-sm"
+                >
+                  <Wand2 className="w-4 h-4 inline mr-2 text-muted-foreground" />
+                  {example}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="prompt">What do you want to visualize?</Label>
-              <Textarea
-                id="prompt"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Describe your visualization: 'Create a project timeline for building a mobile app' or 'Show the customer support process as a flowchart'"
-                rows={4}
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label>Preferred Chart Type</Label>
-              <Select value={chartType} onValueChange={setChartType}>
-                <SelectTrigger className="mt-2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Auto-select best type">Auto-select best type</SelectItem>
-                  <SelectItem value="Gantt Chart">Gantt Chart</SelectItem>
-                  <SelectItem value="Flowchart">Flowchart</SelectItem>
-                  <SelectItem value="Mind Map">Mind Map</SelectItem>
-                  <SelectItem value="Timeline">Timeline</SelectItem>
-                  <SelectItem value="State Diagram">State Diagram</SelectItem>
-                  <SelectItem value="Graph">Graph</SelectItem>
-                  <SelectItem value="Sequence Diagram">Sequence Diagram</SelectItem>
-                  <SelectItem value="User Journey">User Journey</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <h3 className="font-semibold mb-3">Example Prompts</h3>
-          <div className="space-y-2">
-            {examplePrompts.map((example, index) => (
-              <button
-                key={index}
-                onClick={() => setPrompt(example)}
-                className="w-full text-left p-3 rounded-lg border border-border hover:bg-muted transition-colors text-sm"
-              >
-                <Wand2 className="w-4 h-4 inline mr-2 text-muted-foreground" />
-                {example}
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Button 
-        onClick={handleGenerate}
-        className="w-full"
-        disabled={generateFromPromptMutation.isPending}
-      >
-        <Sparkles className="w-4 h-4 mr-2" />
-        {generateFromPromptMutation.isPending ? "AI is creating..." : "Generate Visualization"}
-      </Button>
+      {/* Generate Button - Fixed at bottom */}
+      <div className="flex-shrink-0 p-4 border-t border-border bg-background">
+        <Button 
+          onClick={handleGenerate}
+          className="w-full h-12"
+          disabled={generateFromPromptMutation.isPending}
+          size="lg"
+        >
+          <Wand2 className="w-4 h-4 mr-2" />
+          {generateFromPromptMutation.isPending ? "AI is creating..." : "Generate with AI"}
+        </Button>
+      </div>
     </div>
   );
 }

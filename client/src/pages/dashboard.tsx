@@ -75,25 +75,25 @@ export default function Dashboard() {
         />
         
         <main className="main-content flex-1">
-          <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 h-full">
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-hidden">
             {/* Input Panel */}
             <div className="flex-1 flex flex-col min-h-0">
               <Tabs defaultValue="structured" className="h-full flex flex-col">
-                <div className="border-b border-border px-4 py-2 flex-shrink-0 bg-background">
+                <div className="border-b border-border px-4 py-3 flex-shrink-0 bg-background">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="structured" className="text-sm">Structured Input</TabsTrigger>
                     <TabsTrigger value="prompt" className="text-sm">AI Prompt</TabsTrigger>
                   </TabsList>
                 </div>
                 
-                <TabsContent value="structured" className="m-0 flex-1 overflow-hidden">
+                <TabsContent value="structured" className="m-0 h-full">
                   <TaskInputPanel 
                     projectId={currentProjectId}
                     onGenerateChart={handleGenerateChart}
                   />
                 </TabsContent>
                 
-                <TabsContent value="prompt" className="m-0 flex-1 overflow-hidden">
+                <TabsContent value="prompt" className="m-0 h-full">
                   <PromptGenerator onGenerateChart={handleGenerateChart} />
                 </TabsContent>
               </Tabs>
