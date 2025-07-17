@@ -133,6 +133,53 @@
   background: var(--muted-foreground);
 }
 
+/* Generate button styling */
+.generate-button {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.generate-button:hover {
+  background: var(--primary) !important;
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.generate-button:disabled {
+  opacity: 0.6 !important;
+  transform: none !important;
+  cursor: not-allowed !important;
+}
+
+/* Tab styling improvements */
+[data-state="active"] {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border-bottom: 2px solid var(--primary) !important;
+}
+
+[data-state="inactive"] {
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+}
+
+.tab-trigger {
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  border-radius: 6px 6px 0 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+.tab-trigger:hover {
+  background-color: var(--accent) !important;
+  color: var(--accent-foreground) !important;
+}
+
 /* Prevent body scroll and ensure proper layout */
 html, body {
   height: 100%;

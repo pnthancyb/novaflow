@@ -304,12 +304,12 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       <div className="flex-shrink-0 p-4 border-t border-border bg-background">
         <Button 
           onClick={handleGenerateChart}
-          className="w-full h-12"
+          className="w-full h-12 generate-button"
           disabled={generateMutation.isPending}
           size="lg"
         >
           <Sparkles className="w-5 h-5 mr-2" />
-          {generateMutation.isPending ? "AI is creating..." : "Generate Chart with AI"}
+          {generateMutation.isPending ? "AI oluşturuyor..." : "AI ile Grafik Oluştur"}
         </Button>
       </div>
     </div>

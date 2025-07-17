@@ -3,6 +3,7 @@ import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { TaskInputPanel } from "@/components/task-input-panel";
 import { PromptGenerator } from "@/components/prompt-generator";
+import { ChartDisplayPanel } from "@/components/chart-display-panel";
 import { ChartPreviewPanel } from "@/components/chart-preview-panel";
 import { QuickTipsWidget } from "@/components/quick-tips-widget";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -78,13 +79,13 @@ export default function Dashboard() {
         onApplyTemplate={handleApplyTemplate}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
-      
+
       <div className="layout-container flex">
         <Sidebar 
           isOpen={sidebarOpen} 
           onClose={() => setSidebarOpen(false)}
         />
-        
+
         <main className="main-content flex-1">
           <div className="flex-1 flex flex-col overflow-hidden">
             <Tabs defaultValue="tasks" value={currentTab} onValueChange={setCurrentTab} className="h-full flex flex-col">
@@ -95,14 +96,14 @@ export default function Dashboard() {
                   <TabsTrigger value="preview" className="text-sm">Chart Preview</TabsTrigger>
                 </TabsList>
               </div>
-              
+
               <TabsContent value="tasks" className="m-0 h-full">
                 <TaskInputPanel 
                   projectId={currentProjectId}
                   onGenerateChart={handleGenerateChart}
                 />
               </TabsContent>
-              
+
               <TabsContent value="prompt" className="m-0 h-full">
                 <PromptGenerator onGenerateChart={handleGenerateChart} />
               </TabsContent>
