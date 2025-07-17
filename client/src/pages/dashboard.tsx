@@ -4,12 +4,14 @@ import { Sidebar } from "@/components/sidebar";
 import { TaskInputPanel } from "@/components/task-input-panel";
 import { PromptGenerator } from "@/components/prompt-generator";
 import { ChartPreviewPanel } from "@/components/chart-preview-panel";
+import { QuickTipsWidget } from "@/components/quick-tips-widget";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, Code, Download, FileText } from "lucide-react";
 import { ExportModal } from "@/components/export-modal";
 import { useTranslation } from "@/hooks/use-translation";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -17,6 +19,15 @@ export default function Dashboard() {
   const [mermaidCode, setMermaidCode] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState("tasks");
+
+  // Fetch tasks for Quick Tips context
+  const { data: tasksData } = useQuery({
+    queryKey: [`/api/projects/${currentProjectId}/tasks`],
+    enabled: !!currentProjectId,
+  });
+
+  const taskCount = tasksData?.length || 0;
 
   const handleGenerateChart = (code: string) => {
     setIsGenerating(true);
@@ -75,38 +86,35 @@ export default function Dashboard() {
         />
         
         <main className="main-content flex-1">
-          <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 overflow-hidden">
-            {/* Input Panel */}
-            <div className="flex-1 flex flex-col min-h-0">
-              <Tabs defaultValue="structured" className="h-full flex flex-col">
-                <div className="border-b border-border px-4 py-3 flex-shrink-0 bg-background">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="structured" className="text-sm">Structured Input</TabsTrigger>
-                    <TabsTrigger value="prompt" className="text-sm">AI Prompt</TabsTrigger>
-                  </TabsList>
-                </div>
-                
-                <TabsContent value="structured" className="m-0 h-full">
-                  <TaskInputPanel 
-                    projectId={currentProjectId}
-                    onGenerateChart={handleGenerateChart}
-                  />
-                </TabsContent>
-                
-                <TabsContent value="prompt" className="m-0 h-full">
-                  <PromptGenerator onGenerateChart={handleGenerateChart} />
-                </TabsContent>
-              </Tabs>
-            </div>
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Tabs defaultValue="tasks" value={currentTab} onValueChange={setCurrentTab} className="h-full flex flex-col">
+              <div className="border-b border-border px-4 py-3 flex-shrink-0 bg-background">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="tasks" className="text-sm">AI Tasks</TabsTrigger>
+                  <TabsTrigger value="prompt" className="text-sm">AI Visualization</TabsTrigger>
+                  <TabsTrigger value="preview" className="text-sm">Chart Preview</TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="tasks" className="m-0 h-full">
+                <TaskInputPanel 
+                  projectId={currentProjectId}
+                  onGenerateChart={handleGenerateChart}
+                />
+              </TabsContent>
+              
+              <TabsContent value="prompt" className="m-0 h-full">
+                <PromptGenerator onGenerateChart={handleGenerateChart} />
+              </TabsContent>
 
-            {/* Chart Preview Panel */}
-            <div className="w-full lg:w-96 flex flex-col min-h-0">
-              <ChartPreviewPanel
-                mermaidCode={mermaidCode}
-                onUpdateChart={handleUpdateChart}
-                isGenerating={isGenerating}
-              />
-            </div>
+              <TabsContent value="preview" className="m-0 h-full">
+                <ChartPreviewPanel
+                  mermaidCode={mermaidCode}
+                  onUpdateChart={handleUpdateChart}
+                  isGenerating={isGenerating}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
 
           {/* Status Bar */}
@@ -128,6 +136,13 @@ export default function Dashboard() {
             </div>
           </div>
         </main>
+
+        {/* Quick Tips Widget */}
+        <QuickTipsWidget 
+          currentTab={currentTab}
+          taskCount={taskCount}
+          hasChart={!!mermaidCode}
+        />
       </div>
 
 

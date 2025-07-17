@@ -38,20 +38,20 @@ export function ChartPreviewPanel({
 
   return (
     <>
-      <Card className="h-full flex flex-col">
-        <CardHeader className="pb-3">
+      <div className="h-full flex flex-col p-4">
+        <div className="flex-shrink-0 mb-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base lg:text-lg font-semibold">
-              {t('chart.preview')}
-            </CardTitle>
-            <div className="flex items-center space-x-1 lg:space-x-2">
+            <div>
+              <h1 className="text-xl font-bold mb-1">{t('chart.preview')}</h1>
+              <p className="text-sm text-muted-foreground">View and export your generated visualizations</p>
+            </div>
+            <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={toggleDraggable}
                 disabled={!mermaidCode}
                 title="Open in draggable window"
-                className="hidden sm:flex"
               >
                 <Move className="w-4 h-4" />
               </Button>
@@ -62,64 +62,62 @@ export function ChartPreviewPanel({
                 disabled={!mermaidCode}
                 title="Edit code"
               >
-                <Code className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Code className="w-4 h-4" />
               </Button>
+            </div>
+          </div>
+        </div>
+
+        <Card className="flex-1 flex flex-col">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold">
+                Generated Chart
+              </CardTitle>
               <ChartExport 
                 svgElement={svgElement}
                 mermaidCode={mermaidCode}
                 fileName="novaflow-chart"
               />
             </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="flex-1 p-4 min-h-0">
-          {isGenerating ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-                <p className="text-sm text-muted-foreground">
-                  {t('dashboard.generating')}
-                </p>
+          </CardHeader>
+
+          <CardContent className="flex-1 overflow-hidden p-0">
+            {error ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center text-destructive">
+                  <p className="text-sm">{error}</p>
+                </div>
               </div>
-            </div>
-          ) : error ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-destructive">
-                <p className="text-sm">{error}</p>
+            ) : mermaidCode ? (
+              <div className="h-full flex items-center justify-center overflow-hidden">
+                <ChartRenderer 
+                  code={mermaidCode} 
+                  className="w-full h-full"
+                  onRenderComplete={handleRenderComplete}
+                />
               </div>
-            </div>
-          ) : mermaidCode ? (
-            <div className="h-full flex items-center justify-center overflow-hidden">
-              <ChartRenderer 
-                code={mermaidCode} 
-                className="w-full h-full"
-                onRenderComplete={handleRenderComplete}
-              />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-muted-foreground">
-                <Eye className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">
-                  {t('dashboard.noVisualization')}
-                </p>
-                <p className="text-xs mt-1">
-                  Generate a chart to see the preview here
-                </p>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <Eye className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-lg font-medium mb-2">No Visualization Yet</p>
+                  <p className="text-sm">
+                    Generate a chart using AI Tasks or AI Visualization tabs to see it here
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Draggable Chart Modal */}
       <DraggableChart
-        mermaidCode={mermaidCode}
-        isVisible={showDraggableChart}
+        isOpen={showDraggableChart}
         onClose={() => setShowDraggableChart(false)}
+        mermaidCode={mermaidCode}
         onUpdateChart={onUpdateChart}
-        onEditCode={handleEditCode}
       />
     </>
   );
