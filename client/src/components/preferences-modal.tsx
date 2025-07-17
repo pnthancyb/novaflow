@@ -15,7 +15,7 @@ export function PreferencesModal() {
   const { t, language, setLanguage } = useTranslation();
   const [preferences, setPreferences] = useState({
     defaultChartType: "Auto-select best type",
-    groqModel: "llama-3.2-90b-vision-preview",
+    groqModel: "llama3-70b-8192",
     theme: "system",
     autoSave: true,
     showCodeEditor: true,
@@ -80,19 +80,20 @@ export function PreferencesModal() {
               <div className="space-y-2">
                 <Label>Groq AI Model</Label>
                 <Select 
-                  value={preferences.groqModel || "llama-3.2-90b-vision-preview"} 
+                  value={preferences.groqModel || "llama3-70b-8192"} 
                   onValueChange={(value) => setPreferences({...preferences, groqModel: value})}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="llama-3.2-90b-vision-preview">Llama 3.2 90B Vision (Recommended)</SelectItem>
-                    <SelectItem value="llama-3.2-11b-vision-preview">Llama 3.2 11B Vision</SelectItem>
-                    <SelectItem value="llama-3.1-70b-versatile">Llama 3.1 70B</SelectItem>
-                    <SelectItem value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</SelectItem>
-                    <SelectItem value="mixtral-8x7b-32768">Mixtral 8x7B</SelectItem>
+                    <SelectItem value="llama3-70b-8192">Llama 3 70B (Default)</SelectItem>
+                    <SelectItem value="llama-3.3-70b-versatile">Llama 3.3 70B Versatile</SelectItem>
+                    <SelectItem value="llama3-8b-8192">Llama 3 8B (Fast)</SelectItem>
+                    <SelectItem value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick 17B</SelectItem>
+                    <SelectItem value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B</SelectItem>
                     <SelectItem value="gemma2-9b-it">Gemma 2 9B</SelectItem>
+                    <SelectItem value="llama-3.1-8b-instant">Llama 3.1 8B Instant</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">Choose the AI model for chart generation</p>

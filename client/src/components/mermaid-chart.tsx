@@ -25,73 +25,97 @@ export function MermaidChart({
   const [error, setError] = useState<string | null>(null);
   const [rendered, setRendered] = useState(false);
   const { toast } = useToast();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mermaidInitialized = useRef(false);
 
   useEffect(() => {
-    if (!chart || !elementRef.current) {
-      setRendered(false);
-      return;
-    }
+    if (!chart || !containerRef.current) return;
 
     const renderChart = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        setRendered(false);
 
-        // Initialize mermaid
-        mermaid.initialize({
-          startOnLoad: false,
-          theme: 'base',
-          securityLevel: 'loose',
-          flowchart: { useMaxWidth: true },
-          gantt: { useMaxWidth: true },
-          mindmap: { useMaxWidth: true },
-          timeline: { useMaxWidth: true }
-        });
-
-        // Clear previous content
-        if (elementRef.current) {
-          elementRef.current.innerHTML = '';
+        // Initialize mermaid if not already done
+        if (!mermaidInitialized.current) {
+          mermaid.initialize({
+            theme: 'default',
+            startOnLoad: false,
+            fontFamily: 'Inter, system-ui, sans-serif',
+            fontSize: 14,
+            flowchart: {
+              useMaxWidth: true,
+              htmlLabels: true,
+              curve: 'basis',
+            },
+            gantt: {
+              useMaxWidth: true,
+              fontSize: 12,
+              fontFamily: 'Inter, system-ui, sans-serif',
+              gridLineStartPadding: 350,
+              fontSize: 11,
+              sectionFontSize: 24,
+              numberSectionStyles: 4,
+            },
+            sequence: {
+              useMaxWidth: true,
+              diagramMarginX: 50,
+              diagramMarginY: 10,
+            },
+            er: {
+              useMaxWidth: true,
+            },
+            mindmap: {
+              useMaxWidth: true,
+            },
+            timeline: {
+              useMaxWidth: true,
+            },
+            gitGraph: {
+              useMaxWidth: true,
+            },
+          });
+          mermaidInitialized.current = true;
         }
 
-        // Wait a bit for DOM to be ready
-        await new Promise(resolve => setTimeout(resolve, 50));
+        const container = containerRef.current;
+        container.innerHTML = '';
 
-        if (!elementRef.current) return;
+        // Clean up the chart code
+        const cleanedChart = chart
+          .replace(/^```[\w]*\n?/, '')
+          .replace(/\n?```$/, '')
+          .trim();
 
-        // Generate unique ID
-        const chartId = `chart-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+        const id = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const element = document.createElement('div');
+        element.id = id;
+        element.style.width = '100%';
+        element.style.height = 'auto';
+        container.appendChild(element);
 
-        // Render the chart
-        const result = await mermaid.render(chartId, chart);
-        
-        if (elementRef.current && result.svg) {
-          elementRef.current.innerHTML = result.svg;
-          
-          // Apply styling to the SVG
-          const svgElement = elementRef.current.querySelector('svg');
-          if (svgElement) {
-            svgElement.setAttribute('width', '100%');
-            svgElement.setAttribute('height', 'auto');
-            svgElement.style.maxWidth = '100%';
-            svgElement.style.height = 'auto';
-            svgElement.style.display = 'block';
-            svgElement.classList.add('mermaid-chart-svg');
-          }
+        const { svg } = await mermaid.render(id, cleanedChart);
+        element.innerHTML = svg;
 
-          setRendered(true);
+        // Style the SVG for better display
+        const svgElement = element.querySelector('svg');
+        if (svgElement) {
+          svgElement.style.maxWidth = '100%';
+          svgElement.style.height = 'auto';
+          svgElement.style.display = 'block';
+          svgElement.style.margin = '0 auto';
         }
 
+      } catch (error) {
+        console.error('Mermaid rendering error:', error);
+        setError(`Failed to render chart: ${error.message || 'Invalid chart syntax'}`);
+      } finally {
         setIsLoading(false);
-      } catch (err) {
-        console.error('Mermaid rendering error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to render chart');
-        setIsLoading(false);
-        setRendered(false);
       }
     };
 
-    renderChart();
+    const timeoutId = setTimeout(renderChart, 200);
+    return () => clearTimeout(timeoutId);
   }, [chart]);
 
   const handleExportPNG = async () => {
@@ -109,7 +133,7 @@ export function MermaidChart({
       // Get SVG data
       const svgData = new XMLSerializer().serializeToString(svgElement);
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-      
+
       // Create canvas for PNG export
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -118,10 +142,10 @@ export function MermaidChart({
       // Set canvas size
       const scale = 2; // 2x for high quality
       const svgRect = svgElement.getBoundingClientRect();
-      
+
       canvas.width = svgRect.width * scale;
       canvas.height = svgRect.height * scale;
-      
+
       // Scale context and set white background
       ctx.scale(scale, scale);
       ctx.fillStyle = '#ffffff';
@@ -130,10 +154,10 @@ export function MermaidChart({
       // Load and draw SVG
       const img = new Image();
       const url = URL.createObjectURL(svgBlob);
-      
+
       img.onload = () => {
         ctx.drawImage(img, 0, 0, svgRect.width, svgRect.height);
-        
+
         // Export as PNG
         canvas.toBlob((blob) => {
           if (blob) {
@@ -143,14 +167,14 @@ export function MermaidChart({
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             toast({
               title: "Export Successful",
               description: "Chart exported as PNG"
             });
           }
         }, 'image/png', 1.0);
-        
+
         URL.revokeObjectURL(url);
       };
 
@@ -158,7 +182,7 @@ export function MermaidChart({
         URL.revokeObjectURL(url);
         throw new Error('Failed to load SVG for export');
       };
-      
+
       img.src = url;
     } catch (err) {
       console.error('Export error:', err);
@@ -228,7 +252,7 @@ export function MermaidChart({
           )}
         </div>
       )}
-      
+
       <div className="p-6">
         {isLoading ? (
           <div className="flex justify-center items-center py-16">
@@ -239,7 +263,7 @@ export function MermaidChart({
           </div>
         ) : (
           <div 
-            ref={elementRef} 
+            ref={containerRef} 
             className="mermaid-chart w-full min-h-[400px] flex items-center justify-center"
           />
         )}

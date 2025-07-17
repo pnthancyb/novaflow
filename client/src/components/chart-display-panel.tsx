@@ -113,7 +113,7 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
         {/* Chart Container */}
         <div className="flex-1 p-4 overflow-auto custom-scrollbar">
           <Card className="min-h-full">
-            <CardContent className="p-2">
+            <CardContent className="p-6">
               {isGenerating ? (
                 <div className="w-full h-96 flex items-center justify-center">
                   <div className="text-center">
@@ -123,8 +123,11 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
                   </div>
                 </div>
               ) : mermaidCode ? (
-                <div className="mermaid-chart w-full overflow-auto">
-                  <MermaidChart chart={mermaidCode} className="w-full min-h-[600px]" />
+                <div className="mermaid-chart w-full overflow-auto bg-white dark:bg-gray-900 p-4 rounded-lg border">
+                  <MermaidChart 
+                    chart={mermaidCode} 
+                    className="w-full min-h-[400px] flex items-center justify-center" 
+                  />
                 </div>
               ) : (
                 <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-border rounded-lg">

@@ -108,6 +108,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       }>;
       instructions?: string;
       chartStyle?: string;
+      groqModel?: string;
     }) => {
       const response = await apiRequest("POST", "/api/generate-gantt", data);
       return response.json();
@@ -143,7 +144,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
     const updatedTasks = [...tasks];
     updatedTasks[index] = { ...updatedTasks[index], [field]: value };
     setTasks(updatedTasks);
-    
+
     // If task has an ID, update it in the database
     if (updatedTasks[index].id) {
       updateTaskMutation.mutate(updatedTasks[index]);
@@ -186,6 +187,10 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       return;
     }
 
+    // Get user preferences
+    const preferences = JSON.parse(localStorage.getItem("novaflow-preferences") || "{}");
+    const selectedModel = preferences.groqModel || "llama3-70b-8192";
+
     generateGanttMutation.mutate({
       projectName,
       tasks: tasks.map(task => ({
@@ -196,6 +201,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       })),
       instructions: additionalInstructions,
       chartStyle,
+      groqModel: selectedModel,
     });
   };
 
@@ -246,7 +252,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
             Add Task
           </Button>
         </div>
-        
+
         <div className="space-y-3">
           {tasks.map((task, index) => (
             <Card key={index} className="hover:shadow-sm transition-shadow">

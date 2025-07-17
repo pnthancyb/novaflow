@@ -28,7 +28,7 @@ export function PromptGenerator({ onGenerateChart }: PromptGeneratorProps) {
     };
 
     window.addEventListener('templateApplied', handleTemplateApplied as EventListener);
-    
+
     // Check for stored template prompt
     const storedPrompt = sessionStorage.getItem('templatePrompt');
     if (storedPrompt) {

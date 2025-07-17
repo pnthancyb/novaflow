@@ -161,6 +161,9 @@ Based on this data and user instructions, select the most appropriate Mermaid.js
 
 Generate clean, well-structured Mermaid.js code that best represents this information.`;
 
+      // Get user preferences for model selection
+      const userModel = req.body.groqModel || 'llama3-70b-8192';
+      
       // Call Groq API
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -169,19 +172,19 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: userModel,
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in data visualization and Mermaid.js. Based on the user\'s request, choose the most appropriate visualization type and generate clean, well-structured Mermaid.js code. You can create: gantt charts, flowcharts, mind maps, timelines, gitgraph, state diagrams, or any other Mermaid diagram type that best represents the data. Return only the Mermaid code without any explanations or markdown formatting.'
+              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Choose the best diagram type (gantt, flowchart, mindmap, timeline, state, graph, etc.) based on the data. Ensure proper syntax and formatting.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          max_tokens: 2048,
-          temperature: 0.3,
+          max_tokens: 3000,
+          temperature: 0.1,
         }),
       });
 
@@ -256,6 +259,9 @@ Generate clean, well-structured Mermaid.js code that accurately represents the u
 Include proper titles, labels, and structure.
 Return only the Mermaid code without explanations.`;
 
+      // Get user preferences for model selection
+      const userModel = req.body.groqModel || 'llama3-70b-8192';
+      
       // Call Groq API
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -264,19 +270,19 @@ Return only the Mermaid code without explanations.`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama-3.3-70b-versatile',
+          model: userModel,
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in data visualization and Mermaid.js. Create the most appropriate visualization based on user requests. Return only clean Mermaid code without any explanations or markdown formatting.'
+              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Choose the best diagram type based on the user request. Ensure proper syntax and formatting.'
             },
             {
               role: 'user',
               content: enhancedPrompt
             }
           ],
-          max_tokens: 2048,
-          temperature: 0.3,
+          max_tokens: 3000,
+          temperature: 0.1,
         }),
       });
 
