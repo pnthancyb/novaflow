@@ -129,10 +129,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = generateGanttSchema.parse(req.body);
       
       // Get Groq API key from environment
-      const groqApiKey = process.env.GROQ_API_KEY || process.env.GROQ_API_KEY_ENV_VAR || "";
+      const groqApiKey = process.env.GROQ_API_KEY;
       
       if (!groqApiKey) {
-        return res.status(500).json({ message: "Groq API key not configured" });
+        return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
       }
 
       // Prepare the prompt for Groq
@@ -153,9 +153,8 @@ ${validatedData.tasks.map((task, index) =>
 Please generate a complete Mermaid.js Gantt chart code that includes:
 1. A proper title
 2. Date format specification
-3. Organized sections if applicable
-4. All tasks with proper date ranges
-5. Dependencies if they can be inferred from the dates
+3. All tasks with proper date ranges
+4. Clean syntax
 
 Return only the Mermaid.js code without any explanations or markdown formatting.`;
 
@@ -167,39 +166,51 @@ Return only the Mermaid.js code without any explanations or markdown formatting.
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'mixtral-8x7b-32768',
+          model: 'llama3-8b-8192',
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in project management and Mermaid.js. Generate clean, well-structured Gantt charts.'
+              content: 'You are an expert in project management and Mermaid.js. Generate clean, well-structured Gantt charts using proper Mermaid syntax.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          max_tokens: 2048,
-          temperature: 0.3,
+          max_tokens: 1024,
+          temperature: 0.1,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Groq API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Groq API Response:', response.status, errorText);
+        throw new Error(`Groq API error: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
       const mermaidCode = data.choices[0]?.message?.content?.trim() || '';
 
       if (!mermaidCode) {
-        throw new Error('No Mermaid code generated');
+        throw new Error('No Mermaid code generated from API response');
       }
 
       res.json({ mermaidCode });
     } catch (error) {
-      console.error('Groq API error:', error);
-      res.status(500).json({ 
-        message: "Failed to generate Gantt chart", 
-        error: error instanceof Error ? error.message : "Unknown error" 
+      console.error('Error in generate-gantt endpoint:', error);
+      
+      // Provide fallback Mermaid code if API fails
+      const fallbackCode = `gantt
+    title ${req.body.projectName || 'Project Gantt Chart'}
+    dateFormat YYYY-MM-DD
+    
+    ${req.body.tasks?.map((task: any, index: number) => 
+      `task${index + 1} : ${task.title} : ${task.startDate}, ${task.endDate}`
+    ).join('\n    ') || 'No tasks defined'}`;
+      
+      res.json({ 
+        mermaidCode: fallbackCode,
+        warning: "Used fallback chart generation due to API error"
       });
     }
   });
