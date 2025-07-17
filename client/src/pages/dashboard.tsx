@@ -123,10 +123,9 @@ export default function Dashboard() {
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <ExportModal 
-                  mermaidCode={mermaidCode}
-                  onExport={(format, quality) => console.log('Exported:', format, quality)}
-                />
+                <span className="text-xs text-muted-foreground">
+                  Use export buttons in preview panel
+                </span>
               </div>
             </div>
           </div>

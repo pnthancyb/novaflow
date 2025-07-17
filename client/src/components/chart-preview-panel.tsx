@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MermaidChart } from "@/components/mermaid-chart";
-import { Move, Code, Download, Maximize2, Eye, EyeOff } from "lucide-react";
+import { ChartRenderer } from "@/components/chart-renderer";
+import { ChartExport } from "@/components/chart-export";
+import { Move, Code, Eye } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { DraggableChart } from "@/components/draggable-chart";
 
@@ -20,16 +21,19 @@ export function ChartPreviewPanel({
   error = null 
 }: ChartPreviewPanelProps) {
   const { t } = useTranslation();
-  const [isDraggable, setIsDraggable] = useState(false);
   const [showDraggableChart, setShowDraggableChart] = useState(false);
+  const [svgElement, setSvgElement] = useState<SVGElement | null>(null);
 
   const toggleDraggable = () => {
     setShowDraggableChart(true);
   };
 
   const handleEditCode = () => {
-    // This will be handled by the parent component
     console.log("Edit code clicked");
+  };
+
+  const handleRenderComplete = (svg: SVGElement | null) => {
+    setSvgElement(svg);
   };
 
   return (
@@ -60,6 +64,11 @@ export function ChartPreviewPanel({
               >
                 <Code className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
+              <ChartExport 
+                svgElement={svgElement}
+                mermaidCode={mermaidCode}
+                fileName="novaflow-chart"
+              />
             </div>
           </div>
         </CardHeader>
@@ -82,9 +91,10 @@ export function ChartPreviewPanel({
             </div>
           ) : mermaidCode ? (
             <div className="h-full overflow-auto">
-              <MermaidChart 
-                chart={mermaidCode} 
-                className="w-full h-full mermaid-chart"
+              <ChartRenderer 
+                code={mermaidCode} 
+                className="w-full h-full"
+                onRenderComplete={handleRenderComplete}
               />
             </div>
           ) : (

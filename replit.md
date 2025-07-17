@@ -114,14 +114,16 @@ The application follows a monorepo structure with shared types and schemas betwe
 
 ## Recent Changes and Improvements
 
-### January 17, 2025 - Major System Overhaul
-- **Fixed PNG Export**: Completely rebuilt export system with high-quality multi-resolution support (1x to 4x scaling)
-- **Redesigned Chart Preview**: New draggable, resizable modal system with fullscreen capabilities and escape key support
-- **Added Internationalization**: Full multi-language support for English, Turkish (Türkçe), and Spanish (Español)
-- **Enhanced UI Components**: Created comprehensive component library with proper accessibility features
-- **Improved Mermaid Integration**: High-quality chart rendering with proper theme support and error handling
-- **Optimized Layout**: Removed sidebar constraints, full-width input area with bottom control bar
-- **Working Export Modal**: Dedicated export interface with format selection and quality options
+### January 17, 2025 - Migration and Architecture Overhaul
+- **Completed Replit Migration**: Successfully migrated project from Replit Agent to standard Replit environment
+- **Mobile-Responsive Design**: Added collapsible sidebar with hamburger menu for mobile devices, optimized touch interfaces
+- **Chart System Rewrite**: Completely rebuilt chart rendering and export system from scratch for reliability
+  - New `ChartRenderer` component with robust error handling and SVG management
+  - New `ChartExport` component with PNG, SVG, and text export functionality  
+  - Fixed chart visibility and export issues
+- **Embedded Chart Preview**: Moved chart preview from modal overlay to fixed sidebar panel
+- **Enhanced Layout**: Improved responsive layout with proper mobile breakpoints and spacing
+- **Export Integration**: Integrated export buttons directly into chart preview panel
 
 ## Key Features Implemented
 - **Draggable Chart Preview**: Charts open in resizable, movable modal windows
