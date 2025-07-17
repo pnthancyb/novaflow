@@ -37,16 +37,17 @@ export function ChartPreviewPanel({
       <Card className="h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold">
+            <CardTitle className="text-base lg:text-lg font-semibold">
               {t('chart.preview')}
             </CardTitle>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 lg:space-x-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={toggleDraggable}
                 disabled={!mermaidCode}
                 title="Open in draggable window"
+                className="hidden sm:flex"
               >
                 <Move className="w-4 h-4" />
               </Button>
@@ -57,7 +58,7 @@ export function ChartPreviewPanel({
                 disabled={!mermaidCode}
                 title="Edit code"
               >
-                <Code className="w-4 h-4" />
+                <Code className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </div>
           </div>

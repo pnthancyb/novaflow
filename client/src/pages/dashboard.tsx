@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [currentProjectId] = useState(1); // Mock project ID for demo
   const [mermaidCode, setMermaidCode] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleGenerateChart = (code: string) => {
     setIsGenerating(true);
@@ -64,22 +65,24 @@ export default function Dashboard() {
       <Header 
         onSelectProject={handleSelectProject}
         onApplyTemplate={handleApplyTemplate}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
       
       <div className="flex flex-col lg:flex-row h-screen pt-16">
-        <div className="hidden lg:block">
-          <Sidebar />
-        </div>
+        <Sidebar 
+          isOpen={sidebarOpen} 
+          onClose={() => setSidebarOpen(false)}
+        />
         
         <main className="flex-1 flex flex-col">
           <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4">
             {/* Input Panel */}
             <div className="flex-1 min-h-0">
               <Tabs defaultValue="structured" className="h-full flex flex-col">
-                <div className="border-b border-border px-4 lg:px-6 py-2 flex-shrink-0">
+                <div className="border-b border-border px-2 sm:px-4 lg:px-6 py-2 flex-shrink-0">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="structured" className="text-sm">Structured Input</TabsTrigger>
-                    <TabsTrigger value="prompt" className="text-sm">AI Prompt</TabsTrigger>
+                    <TabsTrigger value="structured" className="text-xs sm:text-sm">Structured Input</TabsTrigger>
+                    <TabsTrigger value="prompt" className="text-xs sm:text-sm">AI Prompt</TabsTrigger>
                   </TabsList>
                 </div>
                 
@@ -97,7 +100,7 @@ export default function Dashboard() {
             </div>
 
             {/* Chart Preview Panel */}
-            <div className="w-full lg:w-96 min-h-0">
+            <div className="w-full lg:w-96 min-h-0 h-64 lg:h-auto">
               <ChartPreviewPanel
                 mermaidCode={mermaidCode}
                 onUpdateChart={handleUpdateChart}
@@ -107,14 +110,14 @@ export default function Dashboard() {
           </div>
 
           {/* Chart Controls */}
-          <div className="border-t border-border bg-muted p-4">
+          <div className="border-t border-border bg-muted p-2 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${
                   isGenerating ? 'bg-yellow-500 animate-pulse' : 
                   mermaidCode ? 'bg-green-500' : 'bg-gray-400'
                 }`} />
-                <span className="text-sm">
+                <span className="text-xs sm:text-sm">
                   {isGenerating ? t('dashboard.generating') : 
                    mermaidCode ? t('dashboard.ready') : t('dashboard.noVisualization')}
                 </span>
