@@ -122,4 +122,3 @@ export function ChartPreviewPanel({
     </>
   );
 }
-```Okay, I will continue generating the code from the last point.
