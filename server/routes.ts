@@ -129,10 +129,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = generateGanttSchema.parse(req.body);
       
       // Get Groq API key from environment
-      const groqApiKey = process.env.GROQ_API_KEY;
+      const groqApiKey = process.env.GROQ_API_KEY?.trim();
       
       if (!groqApiKey) {
         return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
+      }
+
+      // Validate API key format
+      if (!groqApiKey.startsWith('gsk_')) {
+        return res.status(500).json({ message: "Invalid Groq API key format. Key should start with 'gsk_'." });
       }
 
       // Prepare the prompt for Groq - let AI decide the best visualization type
@@ -234,10 +239,15 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
       }
 
       // Get Groq API key from environment
-      const groqApiKey = process.env.GROQ_API_KEY;
+      const groqApiKey = process.env.GROQ_API_KEY?.trim();
       
       if (!groqApiKey) {
         return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
+      }
+
+      // Validate API key format
+      if (!groqApiKey.startsWith('gsk_')) {
+        return res.status(500).json({ message: "Invalid Groq API key format. Key should start with 'gsk_'." });
       }
 
       // Enhanced prompt for better AI understanding
