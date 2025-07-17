@@ -88,9 +88,9 @@ export function PromptGenerator({ onGenerateChart }: PromptGeneratorProps) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex-shrink-0 p-6 border-b border-border bg-background">
-        <h1 className="text-2xl font-bold mb-2 header-title">AI Görselleştirme</h1>
-        <p className="text-base text-muted-foreground header-subtitle">Neyi görselleştirmek istediğinizi açıklayın ve AI'nın mükemmel grafiği oluşturmasını sağlayın</p>
+      <div className="flex-shrink-0 p-4 border-b border-border bg-background">
+        <h1 className="text-xl font-bold mb-1">AI Prompt Generator</h1>
+        <p className="text-sm text-muted-foreground">Describe what you want to visualize and let AI create the perfect chart</p>
       </div>
       
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
@@ -103,9 +103,9 @@ export function PromptGenerator({ onGenerateChart }: PromptGeneratorProps) {
                   id="prompt"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Görselleştirmenizi açıklayın: 'Mobil uygulama geliştirme için proje zaman çizelgesi oluştur' veya 'Müşteri destek sürecini akış şeması olarak göster'"
-                  rows={6}
-                  className="mt-3 text-base"
+                  placeholder="Describe your visualization: 'Create a project timeline for building a mobile app' or 'Show the customer support process as a flowchart'"
+                  rows={4}
+                  className="mt-2"
                 />
               </div>
 
