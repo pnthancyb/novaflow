@@ -131,16 +131,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get Groq API key from environment
       const groqApiKey = process.env.GROQ_API_KEY?.trim();
 
-      console.log('API Key length:', groqApiKey?.length);
-      console.log('API Key starts with gsk_:', groqApiKey?.startsWith('gsk_'));
+      console.log('API Key configured:', !!groqApiKey);
 
-      if (!groqApiKey) {
-        return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
-      }
+      if (!groqApiKey || !groqApiKey.startsWith('gsk_')) {
+        console.log('Invalid or missing API key, using fallback chart generation');
+        
+        // Create a well-structured gantt chart as fallback
+        const fallbackCode = `gantt
+    title ${validatedData.projectName}
+    dateFormat YYYY-MM-DD
+    section Project Timeline
+    ${validatedData.tasks.map((task, index) => 
+      `    ${task.title.replace(/[^a-zA-Z0-9\s]/g, '')} :${task.startDate}, ${task.endDate}`
+    ).join('\n')}`;
 
-      // Validate API key format
-      if (!groqApiKey.startsWith('gsk_')) {
-        return res.status(500).json({ message: "Invalid Groq API key format. Key should start with 'gsk_'." });
+        return res.json({ 
+          mermaidCode: fallbackCode,
+          warning: "Using fallback chart generation. Please configure GROQ_API_KEY for AI-powered features."
+        });
       }
 
       // Prepare the prompt for Groq - let AI decide the best visualization type

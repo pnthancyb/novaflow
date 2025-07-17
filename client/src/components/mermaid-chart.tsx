@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useRef, useState, useCallback } from "react";
 import mermaid from "mermaid";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Code, RefreshCw, AlertCircle } from "lucide-react";
+import { Download, Code, RefreshCw, AlertCircle, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MermaidChartProps {
@@ -20,127 +21,131 @@ export function MermaidChart({
   onEditCode, 
   showControls = false 
 }: MermaidChartProps) {
-  const elementRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [rendered, setRendered] = useState(false);
+  const [isRendered, setIsRendered] = useState(false);
   const { toast } = useToast();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mermaidInitialized = useRef(false);
+  const chartId = useRef<string>(`mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
 
+  // Initialize Mermaid once
   useEffect(() => {
-    if (!chart || !containerRef.current) return;
-
-    const renderChart = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        // Initialize mermaid if not already done
-        if (!mermaidInitialized.current) {
-          mermaid.initialize({
-            theme: 'default',
-            startOnLoad: false,
-            fontFamily: 'Inter, system-ui, sans-serif',
-            fontSize: 14,
-            flowchart: {
-              useMaxWidth: true,
-              htmlLabels: true,
-              curve: 'basis',
-            },
-            gantt: {
-              useMaxWidth: true,
-              fontSize: 11,
-              fontFamily: 'Inter, system-ui, sans-serif',
-              gridLineStartPadding: 350,
-              sectionFontSize: 24,
-              numberSectionStyles: 4,
-            },
-            sequence: {
-              useMaxWidth: true,
-              diagramMarginX: 50,
-              diagramMarginY: 10,
-            },
-            er: {
-              useMaxWidth: true,
-            },
-            mindmap: {
-              useMaxWidth: true,
-            },
-            timeline: {
-              useMaxWidth: true,
-            },
-            gitGraph: {
-              useMaxWidth: true,
-            },
-          });
-          mermaidInitialized.current = true;
-        }
-
-        const container = containerRef.current;
-        container.innerHTML = '';
-
-        // Clean up the chart code and fix common syntax issues
-        let cleanedChart = chart
-          .replace(/^```[\w]*\n?/, '')
-          .replace(/\n?```$/, '')
-          .trim();
-
-        // Fix common Mermaid syntax issues
-        cleanedChart = cleanedChart
-          // Remove invalid title statements inside graph declarations
-          .replace(/^(graph\s+\w+)\s*\n\s*title\s+.*$/gm, '$1')
-          // Remove standalone title lines that appear after graph declaration
-          .replace(/\n\s*title\s+.*$/gm, '')
-          // Fix node definitions with spaces and special characters
-          .replace(/(\w+)\s*-->\s*([^[\n]+)\[([^\]]+)\]/g, (match, from, nodeText, label) => {
-            // Create proper node ID and connection
-            const nodeId = nodeText.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-            return `${from} --> ${nodeId}[${label}]`;
-          })
-          // Fix standalone node definitions that might have issues
-          .replace(/([A-Za-z0-9_]+)\s*\[\s*([^\]]+)\s*\]/g, '$1[$2]')
-          // Fix arrow connections with proper spacing
-          .replace(/\s*-->\s*/g, ' --> ')
-          // Clean up multiple newlines
-          .replace(/\n\s*\n\s*\n/g, '\n\n')
-          .trim();
-
-        const id = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const element = document.createElement('div');
-        element.id = id;
-        element.style.width = '100%';
-        element.style.height = 'auto';
-        container.appendChild(element);
-
-        const { svg } = await mermaid.render(id, cleanedChart);
-        element.innerHTML = svg;
-        setRendered(true);
-
-        // Style the SVG for better display
-        const svgElement = element.querySelector('svg');
-        if (svgElement) {
-          svgElement.style.maxWidth = '100%';
-          svgElement.style.height = 'auto';
-          svgElement.style.display = 'block';
-          svgElement.style.margin = '0 auto';
-          svgElement.style.backgroundColor = 'transparent';
-        }
-
-      } catch (error) {
-        console.error('Mermaid rendering error:', error);
-        setError(`Failed to render chart: ${error.message || 'Invalid chart syntax'}`);
-      } finally {
-        setIsLoading(false);
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      fontFamily: 'Inter, system-ui, sans-serif',
+      fontSize: 14,
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      },
+      gantt: {
+        useMaxWidth: true,
+        fontSize: 12,
+        fontFamily: 'Inter, system-ui, sans-serif'
+      },
+      sequence: {
+        useMaxWidth: true
+      },
+      er: {
+        useMaxWidth: true
+      },
+      mindmap: {
+        useMaxWidth: true
       }
-    };
+    });
+  }, []);
 
-    const timeoutId = setTimeout(renderChart, 200);
-    return () => clearTimeout(timeoutId);
-  }, [chart]);
+  const cleanMermaidCode = useCallback((code: string): string => {
+    if (!code) return '';
+    
+    // Remove code blocks and clean up
+    let cleaned = code
+      .replace(/^```[\w]*\n?/, '')
+      .replace(/\n?```$/, '')
+      .trim();
+
+    // Fix common syntax issues
+    cleaned = cleaned
+      // Remove title statements inside graph declarations
+      .replace(/^(graph\s+\w+)\s*\n\s*title\s+.*$/gm, '$1')
+      .replace(/\n\s*title\s+.*$/gm, '')
+      // Fix node IDs with spaces
+      .replace(/([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)\s*\[/g, '$1_$2[')
+      // Fix arrow syntax
+      .replace(/\s*-->\s*/g, ' --> ')
+      // Clean up multiple newlines
+      .replace(/\n\s*\n\s*\n/g, '\n\n')
+      .trim();
+
+    return cleaned;
+  }, []);
+
+  const renderChart = useCallback(async () => {
+    if (!chart || !chartRef.current) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+      setIsRendered(false);
+
+      const container = chartRef.current;
+      container.innerHTML = '';
+
+      const cleanedChart = cleanMermaidCode(chart);
+      
+      if (!cleanedChart) {
+        throw new Error('No valid chart code provided');
+      }
+
+      // Create a unique element for this render
+      const element = document.createElement('div');
+      element.id = chartId.current;
+      container.appendChild(element);
+
+      // Render with Mermaid
+      const { svg } = await mermaid.render(chartId.current, cleanedChart);
+      
+      if (!svg) {
+        throw new Error('Failed to generate SVG from chart code');
+      }
+
+      element.innerHTML = svg;
+
+      // Style the rendered SVG
+      const svgElement = element.querySelector('svg');
+      if (svgElement) {
+        svgElement.style.maxWidth = '100%';
+        svgElement.style.height = 'auto';
+        svgElement.style.display = 'block';
+        svgElement.style.margin = '0 auto';
+        svgElement.style.backgroundColor = 'transparent';
+      }
+
+      setIsRendered(true);
+    } catch (err) {
+      console.error('Mermaid rendering error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Unknown rendering error';
+      setError(`Failed to render chart: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [chart, cleanMermaidCode]);
+
+  // Render chart when code changes
+  useEffect(() => {
+    if (chart) {
+      const timer = setTimeout(renderChart, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setIsRendered(false);
+      setError(null);
+    }
+  }, [chart, renderChart]);
 
   const handleExportPNG = async () => {
-    const svgElement = elementRef.current?.querySelector('svg') as SVGElement;
+    const svgElement = chartRef.current?.querySelector('svg') as SVGElement;
     if (!svgElement) {
       toast({
         title: "Export Failed",
@@ -151,35 +156,28 @@ export function MermaidChart({
     }
 
     try {
-      // Get SVG data
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-
-      // Create canvas for PNG export
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas context not available');
 
-      // Set canvas size
-      const scale = 2; // 2x for high quality
       const svgRect = svgElement.getBoundingClientRect();
-
+      const scale = 2;
+      
       canvas.width = svgRect.width * scale;
       canvas.height = svgRect.height * scale;
-
-      // Scale context and set white background
+      
       ctx.scale(scale, scale);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
-      // Load and draw SVG
-      const img = new Image();
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
 
+      const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, svgRect.width, svgRect.height);
-
-        // Export as PNG
+        
         canvas.toBlob((blob) => {
           if (blob) {
             const link = document.createElement('a');
@@ -215,30 +213,37 @@ export function MermaidChart({
     }
   };
 
+  const handleRetry = () => {
+    setError(null);
+    renderChart();
+  };
+
+  // No chart content
   if (!chart) {
     return (
       <Card className={`p-8 text-center ${className}`}>
         <div className="text-muted-foreground">
-          <RefreshCw className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No chart to display</p>
+          <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <p className="font-medium">No chart to display</p>
           <p className="text-sm mt-1">Generate a chart to see the preview</p>
         </div>
       </Card>
     );
   }
 
+  // Error state
   if (error) {
     return (
       <Card className={`p-8 text-center border-destructive ${className}`}>
         <div className="text-destructive">
           <AlertCircle className="w-8 h-8 mx-auto mb-2" />
           <p className="font-semibold">Chart Rendering Error</p>
-          <p className="text-sm mt-2">{error}</p>
+          <p className="text-sm mt-2 bg-destructive/10 p-2 rounded">{error}</p>
           <Button 
             variant="outline" 
             size="sm" 
             className="mt-4"
-            onClick={() => window.location.reload()}
+            onClick={handleRetry}
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Retry
@@ -256,7 +261,7 @@ export function MermaidChart({
             variant="secondary"
             size="sm"
             onClick={handleExportPNG}
-            disabled={!rendered}
+            disabled={!isRendered}
           >
             <Download className="w-4 h-4 mr-2" />
             PNG
@@ -284,8 +289,8 @@ export function MermaidChart({
           </div>
         ) : (
           <div 
-            ref={containerRef} 
-            className="mermaid-chart w-full min-h-[400px] flex items-center justify-center"
+            ref={chartRef} 
+            className="mermaid-chart w-full min-h-[400px] flex items-center justify-center overflow-auto"
           />
         )}
       </div>
