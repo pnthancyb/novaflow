@@ -71,10 +71,17 @@ export function MermaidChart({
       // Remove title statements inside graph declarations
       .replace(/^(graph\s+\w+)\s*\n\s*title\s+.*$/gm, '$1')
       .replace(/\n\s*title\s+.*$/gm, '')
-      // Fix node IDs with spaces
-      .replace(/([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)\s*\[/g, '$1_$2[')
-      // Fix arrow syntax
+      // Fix malformed graph declarations like "graph LR_A" 
+      .replace(/^graph\s+([A-Z]+)_([A-Za-z0-9_]+)/gm, 'graph $1\n    $2')
+      // Fix node definitions with underscores in wrong places
+      .replace(/([A-Za-z0-9]+)_([A-Za-z0-9_]+)\[/g, '$1[$2 ')
+      // Fix arrow syntax with malformed connections
+      .replace(/-->\s*-+\^?/g, ' --> ')
       .replace(/\s*-->\s*/g, ' --> ')
+      // Fix standalone node definitions
+      .replace(/^\s*([A-Za-z0-9]+)\[([^\]]+)\]\s*$/gm, '    $1[$2]')
+      // Fix connections between nodes
+      .replace(/^\s*([A-Za-z0-9]+)\s*-->\s*([A-Za-z0-9]+)\s*$/gm, '    $1 --> $2')
       // Clean up multiple newlines
       .replace(/\n\s*\n\s*\n/g, '\n\n')
       .trim();

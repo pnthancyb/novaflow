@@ -135,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (!groqApiKey || !groqApiKey.startsWith('gsk_')) {
         console.log('Invalid or missing API key, using fallback chart generation');
-        
+
         // Create a well-structured gantt chart as fallback
         const fallbackCode = `gantt
     title ${validatedData.projectName}
@@ -192,7 +192,7 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Critical syntax rules: 1) Node IDs must be alphanumeric (A, B, node1, step2) 2) Node labels go in brackets: A[Start Process] 3) Connections use arrows: A --> B 4) Never put spaces in node IDs 5) Example: A[Planning] --> B[Requirements Gathering] --> C[Development] 6) Never use "title" inside graph declarations. Generate syntactically perfect Mermaid code only.'
+              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. CRITICAL SYNTAX RULES: 1) Node IDs must be simple letters/numbers ONLY (A, B, C, node1, step2) 2) Node labels go in brackets: A[Start Process] 3) Connections use arrows: A --> B 4) NEVER use underscores in node IDs 5) Graph declaration format: "graph LR" then newline 6) Indent all nodes and connections with 4 spaces 7) Example format:\ngraph LR\n    A[Planning] --> B[Requirements]\n    B --> C[Development]\n    C --> D[Testing] 8) Never use "title" statements. Generate syntactically perfect Mermaid code only.'
             },
             {
               role: 'user',
@@ -298,7 +298,7 @@ Return only the Mermaid code without explanations.`;
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. Critical syntax rules: 1) Node IDs must be alphanumeric (A, B, node1, step2) 2) Node labels go in brackets: A[Start Process] 3) Connections use arrows: A --> B 4) Never put spaces in node IDs 5) Example: A[Planning] --> B[Requirements Gathering] --> C[Development] 6) Never use "title" inside graph declarations. Generate syntactically perfect Mermaid code only.'
+              content: 'You are an expert in creating Mermaid.js visualizations. Generate ONLY clean, valid Mermaid.js code without any explanations, markdown formatting, or code blocks. CRITICAL SYNTAX RULES: 1) Node IDs must be simple letters/numbers ONLY (A, B, C, node1, step2) 2) Node labels go in brackets: A[Start Process] 3) Connections use arrows: A --> B 4) NEVER use underscores in node IDs 5) Graph declaration format: "graph LR" then newline 6) Indent all nodes and connections with 4 spaces 7) Example format:\ngraph LR\n    A[Planning] --> B[Requirements]\n    B --> C[Development]\n    C --> D[Testing] 8) Never use "title" statements. Generate syntactically perfect Mermaid code only.'
             },
             {
               role: 'user',
