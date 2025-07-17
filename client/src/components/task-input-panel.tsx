@@ -206,13 +206,13 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
   };
 
   return (
-    <div className="p-4 lg:p-6 h-full flex flex-col">
-      <div className="flex-shrink-0 mb-4 lg:mb-6">
-        <h1 className="text-xl lg:text-2xl font-bold mb-2">AI Visualization Builder</h1>
-        <p className="text-sm lg:text-base text-muted-foreground">Add your project data and let AI create the perfect visualization</p>
+    <div className="h-full flex flex-col">
+      <div className="flex-shrink-0 p-4 border-b border-border bg-background">
+        <h1 className="text-xl font-bold mb-1">AI Visualization Builder</h1>
+        <p className="text-sm text-muted-foreground">Add your project data and let AI create the perfect visualization</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 lg:space-y-6 min-h-0">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
 
         {/* Project Settings */}
         <Card className="mb-4 lg:mb-6">
@@ -353,10 +353,10 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       </div>
 
       {/* Generate Button - Fixed at bottom */}
-      <div className="flex-shrink-0 pt-4 border-t bg-background sticky bottom-0 z-10">
+      <div className="flex-shrink-0 p-4 border-t border-border bg-background">
         <Button 
           onClick={generateGanttChart}
-          className="w-full h-12 lg:h-10 text-sm lg:text-base"
+          className="w-full h-12"
           disabled={generateGanttMutation.isPending}
           size="lg"
         >

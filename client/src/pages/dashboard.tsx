@@ -61,46 +61,46 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background overflow-hidden">
       <Header 
         onSelectProject={handleSelectProject}
         onApplyTemplate={handleApplyTemplate}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
       
-      <div className="flex flex-col lg:flex-row h-screen pt-16">
+      <div className="layout-container flex">
         <Sidebar 
           isOpen={sidebarOpen} 
           onClose={() => setSidebarOpen(false)}
         />
         
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4">
+        <main className="main-content flex-1">
+          <div className="flex-1 flex flex-col lg:flex-row gap-4 p-4 h-full">
             {/* Input Panel */}
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 flex flex-col min-h-0">
               <Tabs defaultValue="structured" className="h-full flex flex-col">
-                <div className="border-b border-border px-2 sm:px-4 lg:px-6 py-2 flex-shrink-0">
+                <div className="border-b border-border px-4 py-2 flex-shrink-0 bg-background">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="structured" className="text-xs sm:text-sm">Structured Input</TabsTrigger>
-                    <TabsTrigger value="prompt" className="text-xs sm:text-sm">AI Prompt</TabsTrigger>
+                    <TabsTrigger value="structured" className="text-sm">Structured Input</TabsTrigger>
+                    <TabsTrigger value="prompt" className="text-sm">AI Prompt</TabsTrigger>
                   </TabsList>
                 </div>
                 
-                <TabsContent value="structured" className="m-0 h-full">
+                <TabsContent value="structured" className="m-0 flex-1 overflow-hidden">
                   <TaskInputPanel 
                     projectId={currentProjectId}
                     onGenerateChart={handleGenerateChart}
                   />
                 </TabsContent>
                 
-                <TabsContent value="prompt" className="m-0 h-full">
+                <TabsContent value="prompt" className="m-0 flex-1 overflow-hidden">
                   <PromptGenerator onGenerateChart={handleGenerateChart} />
                 </TabsContent>
               </Tabs>
             </div>
 
             {/* Chart Preview Panel */}
-            <div className="w-full lg:w-96 min-h-0 h-64 lg:h-auto">
+            <div className="w-full lg:w-96 flex flex-col min-h-0">
               <ChartPreviewPanel
                 mermaidCode={mermaidCode}
                 onUpdateChart={handleUpdateChart}
@@ -109,24 +109,22 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Chart Controls */}
-          <div className="border-t border-border bg-muted p-2 sm:p-4">
+          {/* Status Bar */}
+          <div className="border-t border-border bg-muted px-4 py-2 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${
                   isGenerating ? 'bg-yellow-500 animate-pulse' : 
                   mermaidCode ? 'bg-green-500' : 'bg-gray-400'
                 }`} />
-                <span className="text-xs sm:text-sm">
+                <span className="text-sm">
                   {isGenerating ? t('dashboard.generating') : 
                    mermaidCode ? t('dashboard.ready') : t('dashboard.noVisualization')}
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-muted-foreground">
-                  Use export buttons in preview panel
-                </span>
-              </div>
+              <span className="text-xs text-muted-foreground">
+                NovaFlow AI Visualization
+              </span>
             </div>
           </div>
         </main>

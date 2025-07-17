@@ -121,7 +121,66 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--nova-light);
+  background: var(--muted);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* Prevent body scroll and ensure proper layout */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Task panel scrollable area */
+.task-panel-scroll {
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+}
+
+/* Chart container responsive */
+.chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.chart-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Consistent spacing */
+.layout-container {
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+/* Sidebar fixes */
+.sidebar-content {
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+/* Main content area */
+.main-content {
+  height: calc(100vh - 64px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {

@@ -20,11 +20,12 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       {/* Sidebar */}
       <aside className={`
         fixed lg:static inset-y-0 left-0 z-50
-        w-64 bg-muted border-r border-border p-4 overflow-y-auto custom-scrollbar
+        w-64 bg-muted border-r border-border
         transform transition-transform duration-300 ease-in-out lg:transform-none
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        sidebar-content
       `}>
-      <div className="space-y-6">
+      <div className="h-full p-4 space-y-6 overflow-y-auto custom-scrollbar">
         {/* Mobile close button */}
         <div className="flex justify-end lg:hidden">
           <Button
@@ -46,34 +47,57 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         </div>
         
         <div>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Templates</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Quick Actions</h3>
           <div className="space-y-2">
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <Code className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Software Development</span>
-            </div>
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <Megaphone className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Marketing Campaign</span>
-            </div>
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <Rocket className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Product Launch</span>
-            </div>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start p-2 h-auto"
+              onClick={() => window.location.reload()}
+            >
+              <Code className="w-4 h-4 mr-3 text-muted-foreground" />
+              <span className="text-sm">New Project</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start p-2 h-auto"
+              onClick={() => console.log('Templates clicked')}
+            >
+              <Megaphone className="w-4 h-4 mr-3 text-muted-foreground" />
+              <span className="text-sm">Templates</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start p-2 h-auto"
+              onClick={() => {
+                const event = new CustomEvent('openModal', { detail: 'preferences' });
+                window.dispatchEvent(event);
+              }}
+            >
+              <Settings className="w-4 h-4 mr-3 text-muted-foreground" />
+              <span className="text-sm">Preferences</span>
+            </Button>
           </div>
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Settings</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Help & Support</h3>
           <div className="space-y-2">
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <Settings className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Preferences</span>
-            </div>
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <Download className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Export History</span>
-            </div>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start p-2 h-auto"
+              onClick={() => window.open('https://mermaid.js.org/syntax/gantt.html', '_blank')}
+            >
+              <Download className="w-4 h-4 mr-3 text-muted-foreground" />
+              <span className="text-sm">Mermaid Docs</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start p-2 h-auto"
+              onClick={() => console.log('About clicked')}
+            >
+              <Rocket className="w-4 h-4 mr-3 text-muted-foreground" />
+              <span className="text-sm">About NovaFlow</span>
+            </Button>
           </div>
         </div>
       </div>

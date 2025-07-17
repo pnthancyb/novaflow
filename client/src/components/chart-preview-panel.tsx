@@ -90,7 +90,7 @@ export function ChartPreviewPanel({
               </div>
             </div>
           ) : mermaidCode ? (
-            <div className="h-full overflow-auto">
+            <div className="h-full flex items-center justify-center overflow-hidden">
               <ChartRenderer 
                 code={mermaidCode} 
                 className="w-full h-full"
