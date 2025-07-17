@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import mermaid from "mermaid";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Code, Maximize2, RefreshCw, AlertCircle } from "lucide-react";
+import { Download, Code, RefreshCw, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MermaidChartProps {
@@ -21,29 +21,25 @@ export function MermaidChart({
   showControls = false 
 }: MermaidChartProps) {
   const elementRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const [rendered, setRendered] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    let isMounted = true;
+    if (!chart || !elementRef.current) {
+      setRendered(false);
+      return;
+    }
 
     const renderChart = async () => {
-      if (!chart || !elementRef.current || !isMounted) {
-        setIsLoading(false);
-        return;
-      }
-
       try {
         setIsLoading(true);
         setError(null);
+        setRendered(false);
 
-        // Clear previous content immediately
-        elementRef.current.innerHTML = '';
-
-        // Initialize mermaid with simplified configuration
-        await mermaid.initialize({
+        // Initialize mermaid
+        mermaid.initialize({
           startOnLoad: false,
           theme: 'base',
           securityLevel: 'loose',
@@ -53,24 +49,26 @@ export function MermaidChart({
           timeline: { useMaxWidth: true }
         });
 
-        // Add a small delay to ensure DOM is ready
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Clear previous content
+        if (elementRef.current) {
+          elementRef.current.innerHTML = '';
+        }
 
-        if (!isMounted || !elementRef.current) return;
+        // Wait a bit for DOM to be ready
+        await new Promise(resolve => setTimeout(resolve, 50));
 
-        // Generate unique ID for the chart
+        if (!elementRef.current) return;
+
+        // Generate unique ID
         const chartId = `chart-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
 
-        try {
-          // Render the chart with error handling
-          const result = await mermaid.render(chartId, chart);
-          
-          if (!isMounted || !elementRef.current) return;
-
-          // Insert the SVG
+        // Render the chart
+        const result = await mermaid.render(chartId, chart);
+        
+        if (elementRef.current && result.svg) {
           elementRef.current.innerHTML = result.svg;
           
-          // Apply styling
+          // Apply styling to the SVG
           const svgElement = elementRef.current.querySelector('svg');
           if (svgElement) {
             svgElement.setAttribute('width', '100%');
@@ -81,36 +79,20 @@ export function MermaidChart({
             svgElement.classList.add('mermaid-chart-svg');
           }
 
-          setIsLoading(false);
-          setRetryCount(0);
-        } catch (renderError) {
-          console.error('Mermaid render error:', renderError);
-          throw renderError;
+          setRendered(true);
         }
 
+        setIsLoading(false);
       } catch (err) {
-        console.error('Chart rendering failed:', err);
-        if (isMounted) {
-          setError(err instanceof Error ? err.message : 'Failed to render chart');
-          setIsLoading(false);
-        }
+        console.error('Mermaid rendering error:', err);
+        setError(err instanceof Error ? err.message : 'Failed to render chart');
+        setIsLoading(false);
+        setRendered(false);
       }
     };
 
-    // Add small delay before rendering
-    const timer = setTimeout(() => {
-      renderChart();
-    }, 50);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-    };
-  }, [chart, retryCount]);
-
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
-  };
+    renderChart();
+  }, [chart]);
 
   const handleExportPNG = async () => {
     const svgElement = elementRef.current?.querySelector('svg') as SVGElement;
@@ -128,13 +110,13 @@ export function MermaidChart({
       const svgData = new XMLSerializer().serializeToString(svgElement);
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       
-      // Create high-resolution canvas
+      // Create canvas for PNG export
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas context not available');
 
-      // Set high DPI for crisp export
-      const scale = 3; // 3x for very high quality
+      // Set canvas size
+      const scale = 2; // 2x for high quality
       const svgRect = svgElement.getBoundingClientRect();
       
       canvas.width = svgRect.width * scale;
@@ -152,7 +134,7 @@ export function MermaidChart({
       img.onload = () => {
         ctx.drawImage(img, 0, 0, svgRect.width, svgRect.height);
         
-        // Export as high-quality PNG
+        // Export as PNG
         canvas.toBlob((blob) => {
           if (blob) {
             const link = document.createElement('a');
@@ -164,14 +146,14 @@ export function MermaidChart({
             
             toast({
               title: "Export Successful",
-              description: "Chart exported as high-quality PNG"
+              description: "Chart exported as PNG"
             });
           }
         }, 'image/png', 1.0);
         
         URL.revokeObjectURL(url);
       };
-      
+
       img.onerror = () => {
         URL.revokeObjectURL(url);
         throw new Error('Failed to load SVG for export');
@@ -204,6 +186,7 @@ export function MermaidChart({
     return (
       <Card className={`p-8 text-center border-destructive ${className}`}>
         <div className="text-destructive">
+          <AlertCircle className="w-8 h-8 mx-auto mb-2" />
           <p className="font-semibold">Chart Rendering Error</p>
           <p className="text-sm mt-2">{error}</p>
           <Button 
@@ -228,7 +211,7 @@ export function MermaidChart({
             variant="secondary"
             size="sm"
             onClick={handleExportPNG}
-            data-export-png
+            disabled={!rendered}
           >
             <Download className="w-4 h-4 mr-2" />
             PNG
