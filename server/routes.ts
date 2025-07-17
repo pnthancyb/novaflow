@@ -166,19 +166,19 @@ Return only the Mermaid.js code without any explanations or markdown formatting.
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'llama3-8b-8192',
+          model: 'mixtral-8x7b-32768',
           messages: [
             {
               role: 'system',
-              content: 'You are an expert in project management and Mermaid.js. Generate clean, well-structured Gantt charts using proper Mermaid syntax.'
+              content: 'You are an expert in project management and Mermaid.js. Generate clean, well-structured Gantt charts using proper Mermaid syntax. Return only the Mermaid code without any explanations or markdown formatting.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          max_tokens: 1024,
-          temperature: 0.1,
+          max_tokens: 2048,
+          temperature: 0.3,
         }),
       });
 
@@ -189,11 +189,14 @@ Return only the Mermaid.js code without any explanations or markdown formatting.
       }
 
       const data = await response.json();
-      const mermaidCode = data.choices[0]?.message?.content?.trim() || '';
+      let mermaidCode = data.choices[0]?.message?.content?.trim() || '';
 
       if (!mermaidCode) {
         throw new Error('No Mermaid code generated from API response');
       }
+
+      // Clean up markdown code blocks if present
+      mermaidCode = mermaidCode.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
 
       res.json({ mermaidCode });
     } catch (error) {

@@ -48,6 +48,60 @@ export class MemStorage implements IStorage {
     this.currentProjectId = 1;
     this.currentTaskId = 1;
     this.currentChartId = 1;
+    
+    // Create default project for demo
+    this.initializeDefaultData();
+  }
+
+  private initializeDefaultData() {
+    // Create a default project
+    const defaultProject: Project = {
+      id: 1,
+      name: "NovaFlow Demo Project",
+      description: "A sample project to demonstrate NovaFlow's Gantt chart generation",
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      userId: 1,
+      createdAt: new Date()
+    };
+    this.projects.set(1, defaultProject);
+    this.currentProjectId = 2;
+    
+    // Add some sample tasks
+    const sampleTasks: Task[] = [
+      {
+        id: 1,
+        projectId: 1,
+        title: "Project Planning",
+        description: "Define project scope and requirements",
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        order: 0
+      },
+      {
+        id: 2,
+        projectId: 1,
+        title: "Design Phase",
+        description: "Create wireframes and mockups",
+        startDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        order: 1
+      },
+      {
+        id: 3,
+        projectId: 1,
+        title: "Development",
+        description: "Build the application features",
+        startDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        order: 2
+      }
+    ];
+    
+    sampleTasks.forEach(task => {
+      this.tasks.set(task.id, task);
+    });
+    this.currentTaskId = 4;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -82,7 +136,11 @@ export class MemStorage implements IStorage {
     const project: Project = { 
       ...insertProject, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      startDate: insertProject.startDate || null,
+      endDate: insertProject.endDate || null,
+      description: insertProject.description || null,
+      userId: insertProject.userId || null
     };
     this.projects.set(id, project);
     return project;
@@ -113,7 +171,15 @@ export class MemStorage implements IStorage {
 
   async createTask(insertTask: InsertTask): Promise<Task> {
     const id = this.currentTaskId++;
-    const task: Task = { ...insertTask, id };
+    const task: Task = { 
+      ...insertTask, 
+      id,
+      projectId: insertTask.projectId || null,
+      startDate: insertTask.startDate || null,
+      endDate: insertTask.endDate || null,
+      description: insertTask.description || null,
+      order: insertTask.order || null
+    };
     this.tasks.set(id, task);
     return task;
   }
@@ -154,7 +220,9 @@ export class MemStorage implements IStorage {
     const chart: Chart = { 
       ...insertChart, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      projectId: insertChart.projectId || null,
+      chartType: insertChart.chartType || null
     };
     this.charts.set(id, chart);
     return chart;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,14 +47,14 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
   });
 
   // Update local state when data is fetched
-  useState(() => {
+  useEffect(() => {
     if (project) {
       setProjectName(project.name);
       setProjectStartDate(project.startDate || "");
     }
-  });
+  }, [project]);
 
-  useState(() => {
+  useEffect(() => {
     if (fetchedTasks) {
       setTasks(fetchedTasks.map(task => ({
         id: task.id,
@@ -65,7 +65,7 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
         order: task.order || 0,
       })));
     }
-  });
+  }, [fetchedTasks]);
 
   // Mutations
   const createTaskMutation = useMutation({
