@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { TaskInputPanel } from "@/components/task-input-panel";
+import { PromptGenerator } from "@/components/prompt-generator";
 import { ChartDisplayPanel } from "@/components/chart-display-panel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Dashboard() {
   const [currentProjectId] = useState(1); // Mock project ID for demo
@@ -30,10 +32,28 @@ export default function Dashboard() {
         <Sidebar />
         
         <main className="flex-1 flex">
-          <TaskInputPanel 
-            projectId={currentProjectId}
-            onGenerateChart={handleGenerateChart}
-          />
+          <div className="w-1/2">
+            <Tabs defaultValue="structured" className="h-full">
+              <div className="border-b border-border px-6 py-2">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="structured">Structured Input</TabsTrigger>
+                  <TabsTrigger value="prompt">AI Prompt</TabsTrigger>
+                </TabsList>
+              </div>
+              
+              <TabsContent value="structured" className="m-0 h-full">
+                <TaskInputPanel 
+                  projectId={currentProjectId}
+                  onGenerateChart={handleGenerateChart}
+                />
+              </TabsContent>
+              
+              <TabsContent value="prompt" className="m-0 h-full">
+                <PromptGenerator onGenerateChart={handleGenerateChart} />
+              </TabsContent>
+            </Tabs>
+          </div>
+          
           <ChartDisplayPanel 
             mermaidCode={mermaidCode}
             onUpdateChart={handleUpdateChart}

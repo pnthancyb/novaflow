@@ -19,10 +19,22 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
     const svgElement = document.querySelector('.mermaid-chart svg') as SVGElement;
     if (!svgElement) return;
 
-    // Create a canvas and draw the SVG
+    // Create a high-quality canvas
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Get SVG dimensions
+    const svgRect = svgElement.getBoundingClientRect();
+    const scale = 2; // Higher resolution for better quality
+    
+    canvas.width = svgRect.width * scale;
+    canvas.height = svgRect.height * scale;
+    
+    // Scale the context for high DPI
+    ctx.scale(scale, scale);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const data = new XMLSerializer().serializeToString(svgElement);
     const svgBlob = new Blob([data], { type: 'image/svg+xml;charset=utf-8' });
@@ -30,19 +42,17 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
 
     const img = new Image();
     img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, svgRect.width, svgRect.height);
       
-      // Download the canvas as PNG
+      // Download the canvas as PNG with high quality
       canvas.toBlob((blob) => {
         if (blob) {
           const link = document.createElement('a');
-          link.download = 'gantt-chart.png';
+          link.download = 'novaflow-chart.png';
           link.href = URL.createObjectURL(blob);
           link.click();
         }
-      });
+      }, 'image/png', 1.0);
       
       URL.revokeObjectURL(url);
     };
@@ -103,7 +113,7 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
         {/* Chart Container */}
         <div className="flex-1 p-4 overflow-auto custom-scrollbar">
           <Card className="min-h-full">
-            <CardContent className="p-6">
+            <CardContent className="p-2">
               {isGenerating ? (
                 <div className="w-full h-96 flex items-center justify-center">
                   <div className="text-center">
@@ -113,8 +123,8 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
                   </div>
                 </div>
               ) : mermaidCode ? (
-                <div className="mermaid-chart">
-                  <MermaidChart chart={mermaidCode} />
+                <div className="mermaid-chart w-full overflow-auto">
+                  <MermaidChart chart={mermaidCode} className="w-full min-h-[600px]" />
                 </div>
               ) : (
                 <div className="w-full h-96 flex items-center justify-center border-2 border-dashed border-border rounded-lg">

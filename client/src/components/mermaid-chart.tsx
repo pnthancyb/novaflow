@@ -54,5 +54,5 @@ export function MermaidChart({ chart, className = "" }: MermaidChartProps) {
     }
   }, [chart, isInitialized]);
 
-  return <div ref={elementRef} className={className} />;
+  return <div ref={elementRef} className={`${className} min-h-[500px] w-full`} />;
 }

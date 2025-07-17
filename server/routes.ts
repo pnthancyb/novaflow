@@ -221,6 +221,101 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
     }
   });
 
+  // AI Prompt Generation
+  app.post("/api/generate-from-prompt", async (req, res) => {
+    try {
+      const { prompt, chartType } = req.body;
+      
+      if (!prompt || typeof prompt !== 'string') {
+        return res.status(400).json({ message: "Prompt is required" });
+      }
+
+      // Get Groq API key from environment
+      const groqApiKey = process.env.GROQ_API_KEY;
+      
+      if (!groqApiKey) {
+        return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
+      }
+
+      // Enhanced prompt for better AI understanding
+      const enhancedPrompt = `Create a Mermaid.js visualization based on this request:
+
+USER REQUEST: ${prompt}
+
+PREFERRED CHART TYPE: ${chartType || 'Auto-select best type'}
+
+Please analyze the request and create the most appropriate Mermaid.js diagram. Consider:
+- If it involves time/scheduling: use gantt chart
+- If it shows processes/workflows: use flowchart
+- If it shows concepts/ideas: use mind map
+- If it shows states/transitions: use state diagram
+- If it shows interactions: use sequence diagram
+- If user specified a type: use that type
+
+Generate clean, well-structured Mermaid.js code that accurately represents the user's request.
+Include proper titles, labels, and structure.
+Return only the Mermaid code without explanations.`;
+
+      // Call Groq API
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${groqApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are an expert in data visualization and Mermaid.js. Create the most appropriate visualization based on user requests. Return only clean Mermaid code without any explanations or markdown formatting.'
+            },
+            {
+              role: 'user',
+              content: enhancedPrompt
+            }
+          ],
+          max_tokens: 2048,
+          temperature: 0.3,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Groq API Response:', response.status, errorText);
+        throw new Error(`Groq API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      let mermaidCode = data.choices[0]?.message?.content?.trim() || '';
+
+      if (!mermaidCode) {
+        throw new Error('No Mermaid code generated from API response');
+      }
+
+      // Clean up markdown code blocks if present
+      mermaidCode = mermaidCode.replace(/^```[\w]*\n?/, '').replace(/\n?```$/, '').trim();
+
+      res.json({ mermaidCode });
+    } catch (error) {
+      console.error('Error in generate-from-prompt endpoint:', error);
+      
+      // Provide fallback Mermaid code if API fails
+      const fallbackCode = `flowchart TD
+    A[User Request] --> B[Process Request]
+    B --> C[Generate Output]
+    C --> D[Display Result]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style D fill:#9f9,stroke:#333,stroke-width:2px`;
+      
+      res.json({ 
+        mermaidCode: fallbackCode,
+        warning: "Used fallback visualization due to API error"
+      });
+    }
+  });
+
   // Charts
   app.get("/api/projects/:projectId/charts", async (req, res) => {
     try {

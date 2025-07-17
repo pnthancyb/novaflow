@@ -7,17 +7,9 @@ export function Sidebar() {
         <div>
           <h3 className="text-sm font-semibold text-muted-foreground mb-3">Recent Projects</h3>
           <div className="space-y-2">
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <ChartGantt className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Web App Launch</span>
-            </div>
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <Smartphone className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Mobile Redesign</span>
-            </div>
-            <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-background cursor-pointer transition-colors">
-              <TrendingUp className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Q4 Marketing</span>
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-sm">No recent projects</p>
+              <p className="text-xs mt-1">Create your first project to see it here</p>
             </div>
           </div>
         </div>
