@@ -90,7 +90,10 @@ export function MermaidChart({
   }, []);
 
   const renderChart = useCallback(async () => {
-    if (!chart || !chartRef.current) return;
+    if (!chart || !chartRef.current) {
+      console.log('No chart or chartRef available');
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -101,23 +104,36 @@ export function MermaidChart({
       container.innerHTML = '';
 
       const cleanedChart = cleanMermaidCode(chart);
+      console.log('Original chart code:', chart);
+      console.log('Cleaned chart code:', cleanedChart);
       
       if (!cleanedChart) {
         throw new Error('No valid chart code provided');
       }
+
+      // Update chart ID for each render to avoid conflicts
+      chartId.current = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
       // Create a unique element for this render
       const element = document.createElement('div');
       element.id = chartId.current;
       container.appendChild(element);
 
+      // Validate Mermaid syntax before rendering
+      try {
+        await mermaid.parse(cleanedChart);
+      } catch (parseError) {
+        throw new Error(`Invalid Mermaid syntax: ${parseError instanceof Error ? parseError.message : 'Parse error'}`);
+      }
+
       // Render with Mermaid
       const { svg } = await mermaid.render(chartId.current, cleanedChart);
       
-      if (!svg) {
+      if (!svg || svg.trim() === '') {
         throw new Error('Failed to generate SVG from chart code');
       }
 
+      console.log('SVG generated successfully, length:', svg.length);
       element.innerHTML = svg;
 
       // Style the rendered SVG
@@ -128,11 +144,15 @@ export function MermaidChart({
         svgElement.style.display = 'block';
         svgElement.style.margin = '0 auto';
         svgElement.style.backgroundColor = 'transparent';
+        console.log('Chart rendered successfully');
+      } else {
+        throw new Error('SVG element not found after rendering');
       }
 
       setIsRendered(true);
     } catch (err) {
       console.error('Mermaid rendering error:', err);
+      console.error('Chart code that failed:', chart);
       const errorMessage = err instanceof Error ? err.message : 'Unknown rendering error';
       setError(`Failed to render chart: ${errorMessage}`);
     } finally {
@@ -142,10 +162,15 @@ export function MermaidChart({
 
   // Render chart when code changes
   useEffect(() => {
+    console.log('Chart effect triggered, chart:', chart ? 'has content' : 'empty');
     if (chart) {
-      const timer = setTimeout(renderChart, 300);
+      const timer = setTimeout(() => {
+        console.log('Starting chart render...');
+        renderChart();
+      }, 300);
       return () => clearTimeout(timer);
     } else {
+      console.log('No chart content, clearing state');
       setIsRendered(false);
       setError(null);
     }

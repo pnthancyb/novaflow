@@ -206,6 +206,9 @@ export function ChartDisplayPanel({
                 </div>
               ) : mermaidCode ? (
                 <div className="w-full">
+                  <div className="text-xs text-gray-500 p-2 bg-gray-50 border-b">
+                    Chart code length: {mermaidCode.length} characters
+                  </div>
                   <MermaidChart 
                     chart={mermaidCode} 
                     className="w-full"
