@@ -127,10 +127,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/generate-gantt", async (req, res) => {
     try {
       const validatedData = generateGanttSchema.parse(req.body);
-      
+
       // Get Groq API key from environment
       const groqApiKey = process.env.GROQ_API_KEY?.trim();
-      
+
+      console.log('API Key length:', groqApiKey?.length);
+      console.log('API Key starts with gsk_:', groqApiKey?.startsWith('gsk_'));
+
       if (!groqApiKey) {
         return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
       }
@@ -168,7 +171,7 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
 
       // Get user preferences for model selection
       const userModel = req.body.groqModel || 'llama3-70b-8192';
-      
+
       // Call Groq API
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -212,16 +215,16 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
       res.json({ mermaidCode });
     } catch (error) {
       console.error('Error in generate-gantt endpoint:', error);
-      
+
       // Provide fallback Mermaid code if API fails
       const fallbackCode = `gantt
     title ${req.body.projectName || 'Project Gantt Chart'}
     dateFormat YYYY-MM-DD
-    
+
     ${req.body.tasks?.map((task: any, index: number) => 
       `task${index + 1} : ${task.title} : ${task.startDate}, ${task.endDate}`
     ).join('\n    ') || 'No tasks defined'}`;
-      
+
       res.json({ 
         mermaidCode: fallbackCode,
         warning: "Used fallback chart generation due to API error"
@@ -233,14 +236,17 @@ Generate clean, well-structured Mermaid.js code that best represents this inform
   app.post("/api/generate-from-prompt", async (req, res) => {
     try {
       const { prompt, chartType } = req.body;
-      
+
       if (!prompt || typeof prompt !== 'string') {
         return res.status(400).json({ message: "Prompt is required" });
       }
 
       // Get Groq API key from environment
       const groqApiKey = process.env.GROQ_API_KEY?.trim();
-      
+
+      console.log('Prompt API Key length:', groqApiKey?.length);
+      console.log('Prompt API Key starts with gsk_:', groqApiKey?.startsWith('gsk_'));
+
       if (!groqApiKey) {
         return res.status(500).json({ message: "Groq API key not configured. Please add GROQ_API_KEY to your environment variables." });
       }
@@ -271,7 +277,7 @@ Return only the Mermaid code without explanations.`;
 
       // Get user preferences for model selection
       const userModel = req.body.groqModel || 'llama3-70b-8192';
-      
+
       // Call Groq API
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
@@ -315,16 +321,16 @@ Return only the Mermaid code without explanations.`;
       res.json({ mermaidCode });
     } catch (error) {
       console.error('Error in generate-from-prompt endpoint:', error);
-      
+
       // Provide fallback Mermaid code if API fails
       const fallbackCode = `flowchart TD
     A[User Request] --> B[Process Request]
     B --> C[Generate Output]
     C --> D[Display Result]
-    
+
     style A fill:#f9f,stroke:#333,stroke-width:2px
     style D fill:#9f9,stroke:#333,stroke-width:2px`;
-      
+
       res.json({ 
         mermaidCode: fallbackCode,
         warning: "Used fallback visualization due to API error"

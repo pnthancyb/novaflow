@@ -123,10 +123,11 @@ export function ChartDisplayPanel({ mermaidCode, onUpdateChart, isGenerating = f
                   </div>
                 </div>
               ) : mermaidCode ? (
-                <div className="mermaid-chart w-full overflow-auto bg-white dark:bg-gray-900 p-4 rounded-lg border">
+                <div className="w-full overflow-auto">
                   <MermaidChart 
                     chart={mermaidCode} 
-                    className="w-full min-h-[400px] flex items-center justify-center" 
+                    className="w-full min-h-[400px]"
+                    showControls={false}
                   />
                 </div>
               ) : (

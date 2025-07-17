@@ -50,10 +50,9 @@ export function MermaidChart({
             },
             gantt: {
               useMaxWidth: true,
-              fontSize: 12,
+              fontSize: 11,
               fontFamily: 'Inter, system-ui, sans-serif',
               gridLineStartPadding: 350,
-              fontSize: 11,
               sectionFontSize: 24,
               numberSectionStyles: 4,
             },
@@ -96,6 +95,7 @@ export function MermaidChart({
 
         const { svg } = await mermaid.render(id, cleanedChart);
         element.innerHTML = svg;
+        setRendered(true);
 
         // Style the SVG for better display
         const svgElement = element.querySelector('svg');
@@ -104,6 +104,7 @@ export function MermaidChart({
           svgElement.style.height = 'auto';
           svgElement.style.display = 'block';
           svgElement.style.margin = '0 auto';
+          svgElement.style.backgroundColor = 'transparent';
         }
 
       } catch (error) {
