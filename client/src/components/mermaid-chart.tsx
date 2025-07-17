@@ -80,10 +80,20 @@ export function MermaidChart({
         const container = containerRef.current;
         container.innerHTML = '';
 
-        // Clean up the chart code
-        const cleanedChart = chart
+        // Clean up the chart code and fix common syntax issues
+        let cleanedChart = chart
           .replace(/^```[\w]*\n?/, '')
           .replace(/\n?```$/, '')
+          .trim();
+
+        // Fix common Mermaid syntax issues
+        cleanedChart = cleanedChart
+          // Remove invalid title statements inside graph declarations
+          .replace(/^(graph\s+\w+)\s*\n\s*title\s+.*$/gm, '$1')
+          // Remove standalone title lines that appear after graph declaration
+          .replace(/\n\s*title\s+.*$/gm, '')
+          // Clean up multiple newlines
+          .replace(/\n\s*\n\s*\n/g, '\n\n')
           .trim();
 
         const id = `mermaid-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
