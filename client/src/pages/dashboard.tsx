@@ -69,17 +69,19 @@ export default function Dashboard() {
         onApplyTemplate={handleApplyTemplate}
       />
       
-      <div className="flex h-screen pt-16">
-        <Sidebar />
+      <div className="flex flex-col lg:flex-row h-screen pt-16">
+        <div className="hidden lg:block">
+          <Sidebar />
+        </div>
         
         <main className="flex-1 flex flex-col">
-          <div className="flex-1 flex">
-            <div className="flex-1">
-              <Tabs defaultValue="structured" className="h-full">
-                <div className="border-b border-border px-6 py-2">
+          <div className="flex-1 flex flex-col lg:flex-row">
+            <div className="flex-1 min-h-0">
+              <Tabs defaultValue="structured" className="h-full flex flex-col">
+                <div className="border-b border-border px-4 lg:px-6 py-2 flex-shrink-0">
                   <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="structured">Structured Input</TabsTrigger>
-                    <TabsTrigger value="prompt">AI Prompt</TabsTrigger>
+                    <TabsTrigger value="structured" className="text-sm">Structured Input</TabsTrigger>
+                    <TabsTrigger value="prompt" className="text-sm">AI Prompt</TabsTrigger>
                   </TabsList>
                 </div>
                 

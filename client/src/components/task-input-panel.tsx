@@ -200,40 +200,42 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
   };
 
   return (
-    <div className="p-6 h-full flex flex-col">
-      <div className="flex-shrink-0 mb-6">
-        <h1 className="text-2xl font-bold mb-2">AI Visualization Builder</h1>
-        <p className="text-muted-foreground">Add your project data and let AI create the perfect visualization</p>
+    <div className="p-4 lg:p-6 h-full flex flex-col">
+      <div className="flex-shrink-0 mb-4 lg:mb-6">
+        <h1 className="text-xl lg:text-2xl font-bold mb-2">AI Visualization Builder</h1>
+        <p className="text-sm lg:text-base text-muted-foreground">Add your project data and let AI create the perfect visualization</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-4 lg:space-y-6 min-h-0">
 
-      {/* Project Settings */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <h3 className="font-semibold mb-3">Project Settings</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="project-name">Project Name</Label>
-              <Input
-                id="project-name"
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                placeholder="Enter project name"
-              />
+        {/* Project Settings */}
+        <Card className="mb-4 lg:mb-6">
+          <CardContent className="pt-4 lg:pt-6">
+            <h3 className="font-semibold mb-3 text-sm lg:text-base">Project Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="project-name" className="text-sm">Project Name</Label>
+                <Input
+                  id="project-name"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="Enter project name"
+                  className="text-sm"
+                />
+              </div>
+              <div>
+                <Label htmlFor="start-date" className="text-sm">Start Date</Label>
+                <Input
+                  id="start-date"
+                  type="date"
+                  value={projectStartDate}
+                  onChange={(e) => setProjectStartDate(e.target.value)}
+                  className="text-sm"
+                />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="start-date">Start Date</Label>
-              <Input
-                id="start-date"
-                type="date"
-                value={projectStartDate}
-                onChange={(e) => setProjectStartDate(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
       {/* Tasks */}
       <div className="mb-6">
@@ -345,11 +347,12 @@ export function TaskInputPanel({ projectId, onGenerateChart }: TaskInputPanelPro
       </div>
 
       {/* Generate Button - Fixed at bottom */}
-      <div className="flex-shrink-0 pt-4 border-t bg-background">
+      <div className="flex-shrink-0 pt-4 border-t bg-background sticky bottom-0 z-10">
         <Button 
           onClick={generateGanttChart}
-          className="w-full"
+          className="w-full h-12 lg:h-10 text-sm lg:text-base"
           disabled={generateGanttMutation.isPending}
+          size="lg"
         >
           <Sparkles className="w-4 h-4 mr-2" />
           {generateGanttMutation.isPending ? "AI is creating..." : "Generate Visualization with AI"}

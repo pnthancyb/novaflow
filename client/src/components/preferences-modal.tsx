@@ -15,6 +15,7 @@ export function PreferencesModal() {
   const { t, language, setLanguage } = useTranslation();
   const [preferences, setPreferences] = useState({
     defaultChartType: "Auto-select best type",
+    groqModel: "llama-3.2-90b-vision-preview",
     theme: "system",
     autoSave: true,
     showCodeEditor: true,
@@ -61,7 +62,7 @@ export function PreferencesModal() {
           Preferences
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('preferences.title')}</DialogTitle>
         </DialogHeader>
@@ -77,7 +78,28 @@ export function PreferencesModal() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>{t('preferences.defaultChartType')}</Label>
+                <Label>Groq AI Model</Label>
+                <Select 
+                  value={preferences.groqModel || "llama-3.2-90b-vision-preview"} 
+                  onValueChange={(value) => setPreferences({...preferences, groqModel: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="llama-3.2-90b-vision-preview">Llama 3.2 90B Vision (Recommended)</SelectItem>
+                    <SelectItem value="llama-3.2-11b-vision-preview">Llama 3.2 11B Vision</SelectItem>
+                    <SelectItem value="llama-3.1-70b-versatile">Llama 3.1 70B</SelectItem>
+                    <SelectItem value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</SelectItem>
+                    <SelectItem value="mixtral-8x7b-32768">Mixtral 8x7B</SelectItem>
+                    <SelectItem value="gemma2-9b-it">Gemma 2 9B</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">Choose the AI model for chart generation</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Default Chart Type</Label>
                 <Select 
                   value={preferences.defaultChartType} 
                   onValueChange={(value) => setPreferences({...preferences, defaultChartType: value})}
@@ -86,13 +108,13 @@ export function PreferencesModal() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Auto-select best type">{t('preferences.autoSelect')}</SelectItem>
-                    <SelectItem value="Gantt Chart">{t('preferences.ganttChart')}</SelectItem>
-                    <SelectItem value="Flowchart">{t('preferences.flowchart')}</SelectItem>
-                    <SelectItem value="Mind Map">{t('preferences.mindMap')}</SelectItem>
-                    <SelectItem value="Timeline">{t('preferences.timeline')}</SelectItem>
-                    <SelectItem value="State Diagram">{t('preferences.stateDiagram')}</SelectItem>
-                    <SelectItem value="Graph">{t('preferences.graph')}</SelectItem>
+                    <SelectItem value="Auto-select best type">Auto-select best type</SelectItem>
+                    <SelectItem value="Gantt Chart">Gantt Chart</SelectItem>
+                    <SelectItem value="Flowchart">Flowchart</SelectItem>
+                    <SelectItem value="Mind Map">Mind Map</SelectItem>
+                    <SelectItem value="Timeline">Timeline</SelectItem>
+                    <SelectItem value="State Diagram">State Diagram</SelectItem>
+                    <SelectItem value="Graph">Graph</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

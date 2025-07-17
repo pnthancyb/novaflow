@@ -116,7 +116,6 @@ export function MermaidChart({
             
             // Add class for PNG export targeting
             svgElement.classList.add('mermaid-chart-svg');
-            setChartElement(svgElement);
           }
         }
 
